@@ -1,6 +1,7 @@
 package variableHandling
 
 import (
+	"QIQ/cmd/qiq/ast"
 	"QIQ/cmd/qiq/runtime/values"
 	"testing"
 )
@@ -49,6 +50,9 @@ func TestLibBoolval(t *testing.T) {
 
 	// null to boolean
 	doTest(values.NewNull(), false)
+
+	// object to bool
+	doTest(values.NewObject(ast.NewClassDeclarationStmt(0, nil, "C", false, false)), true)
 }
 
 // -------------------------------------- floatval -------------------------------------- MARK: floatval

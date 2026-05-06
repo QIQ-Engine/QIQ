@@ -627,14 +627,6 @@ func TestNumbers(t *testing.T) {
 	testInputOutput(t, `<?php var_dump(floatval('9.9'));`, "float(9.9)\n")
 	testInputOutput(t, `<?php var_dump(floatval('9.9.9'));`, "float(9.9)\n")
 	testInputOutput(t, `<?php var_dump(floatval('9X'));`, "float(9)\n")
-	// boolval
-	testInputOutput(t, `<?php var_dump(boolval('..9'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('.9.'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('9..'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('9'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('9.9'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('9.9.9'));`, "bool(true)\n")
-	testInputOutput(t, `<?php var_dump(boolval('9X'));`, "bool(true)\n")
 }
 
 func TestOperators(t *testing.T) {
@@ -981,6 +973,8 @@ func TestLooseComparison(t *testing.T) {
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 == $c1);`, "bool(true)\n")
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 != $c1);`, "bool(false)\n")
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 == null);`, "bool(false)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new C; var_dump($c1 == true);`, "bool(true)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new C; var_dump($c1 == false);`, "bool(false)\n")
 
 	// QIQ feature: always strict comparison
 	devIni := ini.NewDevIni()
@@ -1293,6 +1287,13 @@ func TestCompareRelation(t *testing.T) {
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 < NULL);`, "bool(false)\n")
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <= NULL);`, "bool(false)\n")
 	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <=> null);`, "int(1)\n")
+	// Object - Boolean
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 < true);`, "bool(false)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <= true);`, "bool(true)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <=> true);`, "int(0)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 < false);`, "bool(false)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <= false);`, "bool(false)\n")
+	testInputOutput(t, `<?php class c {} $c1 = new c; var_dump($c1 <=> false);`, "int(1)\n")
 }
 
 // -------------------------------------- functions -------------------------------------- MARK: functions

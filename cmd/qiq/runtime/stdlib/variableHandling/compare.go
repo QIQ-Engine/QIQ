@@ -197,7 +197,8 @@ func compareRelationBoolean(lhs *values.Bool, operator string, rhs values.Runtim
 	if err != nil {
 		return values.NewVoidSlot(), err
 	}
-	// TODO compareRelationBoolean - object - implement in variableHandling.BoolVal(	// TODO compareRelationBoolean - resource - implement in variableHandling.BoolVal(
+	// TODO compareRelationBoolean - object - implement in variableHandling.BoolVal(
+	// TODO compareRelationBoolean - resource - implement in variableHandling.BoolVal(
 	lhsInt, err := IntVal(lhs, false)
 	if err != nil {
 		return values.NewVoidSlot(), err
@@ -628,6 +629,13 @@ func compareRelationObject(lhs *values.Object, operator string, rhs values.Runti
 		default:
 			return values.NewVoidSlot(), phpError.NewError(`compareRelationObject: Operator "%s" not implemented`, operator)
 		}
+
+	case values.BoolValue:
+		lhs, err := BoolVal(lhs)
+		if err != nil {
+			return values.NewVoidSlot(), err
+		}
+		return compareRelationBoolean(values.NewBool(lhs), operator, rhs)
 
 	// TODO compareRelationObject - int
 	// TODO compareRelationObject - float

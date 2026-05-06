@@ -470,6 +470,16 @@ func TestLibMisc(t *testing.T) {
 // -------------------------------------- variable handling -------------------------------------- MARK: variable handling
 
 func TestLibVariableHandling(t *testing.T) {
+	// boolval
+	testInputOutput(t, `<?php var_dump(boolval('..9'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('.9.'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('9..'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('9'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('9.9'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('9.9.9'));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(boolval('9X'));`, "bool(true)\n")
+	testInputOutput(t, `<?php class C {} $c = new C; var_dump(boolval($c));`, "bool(true)\n")
+
 	// get_debug_type
 	testInputOutput(t, `<?php echo get_debug_type(false);`, "bool")
 	testInputOutput(t, `<?php echo get_debug_type(true);`, "bool")

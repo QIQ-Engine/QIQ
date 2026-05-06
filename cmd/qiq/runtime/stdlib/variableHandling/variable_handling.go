@@ -119,13 +119,13 @@ func BoolVal(runtimeValue values.RuntimeValue) (bool, phpError.Error) {
 		// If the source is an empty string or the string “0”, the result value is FALSE; otherwise, the result value is TRUE.
 		str := runtimeValue.(*values.Str).Value
 		return str != "" && str != "0", nil
+	case values.ObjectValue:
+		// Spec: https://phplang.org/spec/08-conversions.html#converting-to-boolean-type
+		// If the source is an object, the result value is TRUE.
+		return true, nil
 	default:
 		return false, phpError.NewError("boolval: Unsupported runtime value %s", runtimeValue.GetType())
 	}
-
-	// TODO boolval - object
-	// Spec: https://phplang.org/spec/08-conversions.html#converting-to-boolean-type
-	// If the source is an object, the result value is TRUE.
 
 	// TODO boolval - resource
 	// Spec: https://phplang.org/spec/08-conversions.html#converting-to-boolean-type
