@@ -5,6 +5,7 @@ import (
 	"QIQ/cmd/qiq/config"
 	"QIQ/cmd/qiq/phpError"
 	"fmt"
+	"strconv"
 )
 
 type Array struct {
@@ -105,10 +106,10 @@ func (array *Array) GetElement(key RuntimeValue) (*Slot, bool) {
 
 func keyToMapKey(key RuntimeValue) (string, phpError.Error) {
 	if key.GetType() == IntValue {
-		return fmt.Sprintf("i_%d", key.(*Int).Value), nil
+		return strconv.FormatInt(key.(*Int).Value, 10), nil
 	}
 	if key.GetType() == StrValue {
-		return fmt.Sprintf("s_%s", key.(*Str).Value), nil
+		return key.(*Str).Value, nil
 	}
 	return "", phpError.NewError("Array.keyToMapKey: Unsupported key type %s", ToPhpType(key))
 }
