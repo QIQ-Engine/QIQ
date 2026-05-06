@@ -546,6 +546,9 @@ func TestArray(t *testing.T) {
 	testInputOutput(t, `<?php $a = [1, 2, 3]; var_dump(implode($a));`, "string(5) \"1 2 3\"\n")
 	testInputOutput(t, `<?php $a = [1, 2, 3]; var_dump(implode(' ', $a));`, "string(5) \"1 2 3\"\n")
 	testInputOutput(t, `<?php $a = ["1", 2, 3.4]; var_dump(implode('-', $a));`, "string(7) \"1-2-3.4\"\n")
+
+	// Reassignment
+	testInputOutput(t, `<?php $a = [1];echo serialize($a);$a = [2];echo serialize($a);`, "a:1:{i:0;i:1;}a:1:{i:0;i:2;}")
 }
 
 func TestCastExpression(t *testing.T) {
@@ -1577,6 +1580,9 @@ func TestClasses(t *testing.T) {
 	)
 	testForError(t, "<?php interface Traversable { }", phpError.NewError(`Cannot redeclare interface Traversable in %s:1:7`, TEST_FILE_NAME))
 	testForError(t, "<?php interface stdClass { }", phpError.NewError(`Cannot redeclare class stdClass in %s:1:7`, TEST_FILE_NAME))
+
+	// Reassignment
+	testInputOutput(t, `<?php class C {}$o = new C;echo "1";$o = new C;echo "2";`, "12")
 }
 
 // TODO Add interface test cases

@@ -115,11 +115,7 @@ func (interpreter *Interpreter) ProcessSimpleAssignmentExpr(expr *ast.SimpleAssi
 	}
 
 	// Array
-	if currentValue.GetType() == values.ArrayValue {
-		if expr.Variable.GetKind() != ast.SubscriptExpr {
-			return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Array: Unsupported variable type %s", expr.Variable.GetKind())
-		}
-
+	if currentValue.GetType() == values.ArrayValue && expr.Variable.GetKind() == ast.SubscriptExpr {
 		keys := []ast.IExpression{expr.Variable.(*ast.SubscriptExpression).Index}
 		subarray := expr.Variable.(*ast.SubscriptExpression).Variable
 		for subarray.GetKind() == ast.SubscriptExpr {
@@ -165,11 +161,7 @@ func (interpreter *Interpreter) ProcessSimpleAssignmentExpr(expr *ast.SimpleAssi
 		return valueSlot, nil
 	}
 
-	if currentValue.GetType() == values.ObjectValue {
-		if expr.Variable.GetKind() != ast.MemberAccessExpr {
-			return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Object: Unsupported variable type %s", expr.Variable.GetKind())
-		}
-
+	if currentValue.GetType() == values.ObjectValue && expr.Variable.GetKind() == ast.MemberAccessExpr {
 		if expr.Variable.(*ast.MemberAccessExpression).Member.GetKind() != ast.ConstantAccessExpr {
 			return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Object: Unsupported member type %s", expr.Variable.(*ast.MemberAccessExpression).Member.GetKind())
 		}
