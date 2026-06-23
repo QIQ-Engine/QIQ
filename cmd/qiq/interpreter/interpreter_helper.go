@@ -29,7 +29,7 @@ func (interpreter *Interpreter) Print(str string) {
 	}
 }
 
-func (interpreter *Interpreter) Println(str string) { interpreter.Print(str + os.EOL) }
+func (interpreter *Interpreter) Println(str string) { interpreter.Print(str + "\n") }
 
 func (interpreter *Interpreter) WriteResult(str string) { interpreter.result += str }
 

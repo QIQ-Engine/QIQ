@@ -16,6 +16,7 @@ func Register(environment runtime.Environment) {
 	environment.AddNativeFunction("ob_get_clean", nativeFn_ob_get_clean)
 	environment.AddNativeFunction("ob_get_contents", nativeFn_ob_get_contents)
 	environment.AddNativeFunction("ob_get_flush", nativeFn_ob_get_flush)
+	environment.AddNativeFunction("ob_get_length", nativeFn_ob_get_length)
 	environment.AddNativeFunction("ob_get_level", nativeFn_ob_get_level)
 	environment.AddNativeFunction("ob_start", nativeFn_ob_start)
 }
@@ -193,6 +194,27 @@ func nativeFn_ob_get_flush(args []values.RuntimeValue, context runtime.Context) 
 	return values.NewStr(content), nil
 }
 
+// -------------------------------------- ob_get_length -------------------------------------- MARK: ob_get_length
+
+func nativeFn_ob_get_length(args []values.RuntimeValue, context runtime.Context) (values.RuntimeValue, phpError.Error) {
+	// Spec: https://www.php.net/manual/en/function.ob-get-length.php
+
+	_, err := funcParamValidator.NewValidator("ob_get_length").Validate(args)
+	if err != nil {
+		return values.NewVoid(), err
+	}
+
+	// Spec: https://www.php.net/manual/en/function.ob-get-length.php
+	// Returns ... false if no buffering is active.
+	if context.Interpreter.GetOutputBufferStack().Len() == 0 {
+		return values.NewBool(false), nil
+	}
+
+	// Spec: https://www.php.net/manual/en/function.ob-get-length.php
+	// Returns the length of the output buffer contents, in bytes
+	return values.NewInt(int64(len(context.Interpreter.GetOutputBufferStack().GetLast().Content))), nil
+}
+
 // -------------------------------------- ob_get_level -------------------------------------- MARK: ob_get_level
 
 func nativeFn_ob_get_level(args []values.RuntimeValue, context runtime.Context) (values.RuntimeValue, phpError.Error) {
@@ -225,7 +247,6 @@ func nativeFn_ob_start(args []values.RuntimeValue, context runtime.Context) (val
 }
 
 // TODO flush
-// TODO ob_​get_​length
 // TODO ob_​get_​status
 // TODO ob_​implicit_​flush
 // TODO ob_​list_​handlers

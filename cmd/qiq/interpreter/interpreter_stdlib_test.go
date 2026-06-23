@@ -91,6 +91,7 @@ func TestLibMath(t *testing.T) {
 func TestObFunctions(t *testing.T) {
 	// Implicit flush
 	testInputOutput(t, `<?php ob_start(); echo '123';`, "123")
+
 	// ob_clean
 	testInputOutput(t, `<?php ob_start(); echo '123'; ob_clean(); echo '456';`, "456")
 	// ob_flush
@@ -105,6 +106,19 @@ func TestObFunctions(t *testing.T) {
 	testInputOutput(t, `<?php ob_start(); echo '123'; $ob = ob_get_flush(); echo '456' . $ob;`, "123456123")
 	// ob_get_contents
 	testInputOutput(t, `<?php ob_start(); echo '123'; $ob = ob_get_contents(); ob_end_clean(); echo '456' . $ob;`, "456123")
+
+	// ob_get_length
+	testInputOutput(t, `<?php ob_start();
+		echo "Helloä "; $len1 = ob_get_length();
+		echo "World"; $len2 = ob_get_length();
+		ob_end_clean(); echo $len1 . ", " . $len2;`,
+		"8, 13")
+	// No buffering actrive
+	testInputOutput(t, `<?php
+		echo "Hello "; $len1 = ob_get_length();
+		echo serialize($len1);`,
+		"Hello b:0;")
+
 	// ob_get_level
 	testInputOutput(t, `<?php ob_start(); echo 'A' . ob_get_level(); ob_start(); echo 'B' . ob_get_level();`, "A1B2")
 	// Stacked output buffers
