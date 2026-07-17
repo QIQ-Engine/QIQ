@@ -47,7 +47,9 @@ func nativeFn_class_alias(args []values.RuntimeValue, context runtime.Context) (
 		return values.NewBool(false), nil
 	}
 
-	context.Interpreter.AddClass(args[1].(*values.Str).Value, classDecl)
+	if err := context.Interpreter.AddClass(args[1].(*values.Str).Value, classDecl); err != nil {
+		return values.NewVoid(), err
+	}
 
 	return values.NewBool(true), nil
 }

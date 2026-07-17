@@ -2,16 +2,19 @@ package interfaces
 
 import (
 	"QIQ/cmd/qiq/ast"
+	"QIQ/cmd/qiq/phpError"
 	"QIQ/cmd/qiq/runtime"
 )
 
-func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
+func RegisterDefaultInterfaces(interpreter runtime.Interpreter) phpError.Error {
 	// -------------------------------------- Traversable -------------------------------------- MARK: Traversable
 
 	// Spec: https://www.php.net/manual/en/class.traversable.php
 	Traversable := ast.NewInterfaceDeclarationStmt(0, nil, "Traversable")
 
-	interpreter.AddInterface(Traversable.Name, Traversable)
+	if err := interpreter.AddInterface(Traversable.Name, Traversable); err != nil {
+		return err
+	}
 
 	// -------------------------------------- IteratorAggregate -------------------------------------- MARK: IteratorAggregate
 
@@ -20,7 +23,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	IteratorAggregate.Parents = append(IteratorAggregate.Parents, "Traversable")
 	IteratorAggregate.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "getIterator", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"Traversable"}))
 
-	interpreter.AddInterface(IteratorAggregate.Name, IteratorAggregate)
+	if err := interpreter.AddInterface(IteratorAggregate.Name, IteratorAggregate); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Iterator -------------------------------------- MARK: Iterator
 
@@ -33,7 +38,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	Iterator.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "rewind", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"void"}))
 	Iterator.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "valid", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"bool"}))
 
-	interpreter.AddInterface(Iterator.Name, Iterator)
+	if err := interpreter.AddInterface(Iterator.Name, Iterator); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Serializable -------------------------------------- MARK: Serializable
 
@@ -42,7 +49,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	Serializable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "serialize", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"null", "string"}))
 	Serializable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "unserialize", []string{"public"}, []ast.FunctionParameter{ast.NewFunctionParam(false, "$data", []string{"string"}, nil)}, nil, []string{"void"}))
 
-	interpreter.AddInterface(Serializable.Name, Serializable)
+	if err := interpreter.AddInterface(Serializable.Name, Serializable); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ArrayAccess -------------------------------------- MARK: ArrayAccess
 
@@ -53,7 +62,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	ArrayAccess.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "offsetSet", []string{"public"}, []ast.FunctionParameter{ast.NewFunctionParam(false, "$offset", []string{"mixed"}, nil), {Name: "$value", Type: []string{"mixed"}}}, nil, []string{"void"}))
 	ArrayAccess.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "offsetUnset", []string{"public"}, []ast.FunctionParameter{ast.NewFunctionParam(false, "$offset", []string{"mixed"}, nil)}, nil, []string{"void"}))
 
-	interpreter.AddInterface(ArrayAccess.Name, ArrayAccess)
+	if err := interpreter.AddInterface(ArrayAccess.Name, ArrayAccess); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Countable -------------------------------------- MARK: Countable
 
@@ -61,7 +72,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	Countable := ast.NewInterfaceDeclarationStmt(0, nil, "Countable")
 	Countable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "count", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"int"}))
 
-	interpreter.AddInterface(Countable.Name, Countable)
+	if err := interpreter.AddInterface(Countable.Name, Countable); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Stringable -------------------------------------- MARK: Stringable
 
@@ -69,7 +82,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	Stringable := ast.NewInterfaceDeclarationStmt(0, nil, "Stringable")
 	Stringable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__toString", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"string"}))
 
-	interpreter.AddInterface(Stringable.Name, Stringable)
+	if err := interpreter.AddInterface(Stringable.Name, Stringable); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Throwable -------------------------------------- MARK: Throwable
 
@@ -84,7 +99,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	Throwable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "getTraceAsString", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"string"}))
 	Throwable.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "getPrevious", []string{"public"}, []ast.FunctionParameter{}, nil, []string{"null", "Throwable"}))
 
-	interpreter.AddInterface(Throwable.Name, Throwable)
+	if err := interpreter.AddInterface(Throwable.Name, Throwable); err != nil {
+		return err
+	}
 
 	// -------------------------------------- UnitEnum -------------------------------------- MARK: UnitEnum
 
@@ -92,5 +109,9 @@ func RegisterDefaultInterfaces(interpreter runtime.Interpreter) {
 	UnitEnum := ast.NewInterfaceDeclarationStmt(0, nil, "UnitEnum")
 	UnitEnum.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "cases", []string{"public", "static"}, []ast.FunctionParameter{}, nil, []string{"array"}))
 
-	interpreter.AddInterface(UnitEnum.Name, UnitEnum)
+	if err := interpreter.AddInterface(UnitEnum.Name, UnitEnum); err != nil {
+		return err
+	}
+
+	return nil
 }

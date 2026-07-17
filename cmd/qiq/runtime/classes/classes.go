@@ -2,10 +2,11 @@ package classes
 
 import (
 	"QIQ/cmd/qiq/ast"
+	"QIQ/cmd/qiq/phpError"
 	"QIQ/cmd/qiq/runtime"
 )
 
-func RegisterDefaultClasses(interpreter runtime.Interpreter) {
+func RegisterDefaultClasses(interpreter runtime.Interpreter) phpError.Error {
 	// -------------------------------------- Exception -------------------------------------- MARK: Exception
 
 	// Spec: https://www.php.net/manual/en/class.exception.php
@@ -29,7 +30,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	Exception.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__toString", []string{"public"}, []ast.FunctionParameter{}, ast.NewCompoundStmt(0, []ast.IStatement{ast.NewReturnStmt(0, nil, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "string")))}), []string{"string"}))
 	Exception.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__clone", []string{"private"}, []ast.FunctionParameter{}, ast.NewCompoundStmt(0, []ast.IStatement{}), []string{"void"}))
 
-	interpreter.AddClass(Exception.Name, Exception)
+	if err := interpreter.AddClass(Exception.Name, Exception); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ErrorException -------------------------------------- MARK: ErrorException
 
@@ -40,7 +43,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ErrorException.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__construct", []string{"public"}, []ast.FunctionParameter{{Name: "$message", Type: []string{"string"}, DefaultValue: ast.NewStringLiteralExpr(0, nil, "", ast.DoubleQuotedString)}, {Name: "$code", Type: []string{"int"}, DefaultValue: ast.NewIntegerLiteralExpr(0, nil, 0)}, {Name: "$severity", Type: []string{"int"}, DefaultValue: ast.NewConstantAccessExpr(0, nil, "E_ERROR")}, {Name: "$filename", Type: []string{"null", "string"}, DefaultValue: ast.NewConstantAccessExpr(0, nil, "NULL")}, {Name: "$line", Type: []string{"null", "int"}, DefaultValue: ast.NewConstantAccessExpr(0, nil, "NULL")}, {Name: "$previous", Type: []string{"null", "Throwable"}, DefaultValue: ast.NewConstantAccessExpr(0, nil, "NULL")}}, ast.NewCompoundStmt(0, []ast.IStatement{ast.NewExpressionStmt(0, ast.NewMemberAccessExpr(0, nil, ast.NewConstantAccessExpr(0, nil, "parent"), ast.NewFunctionCallExpr(0, nil, ast.NewStringLiteralExpr(0, nil, "__construct", ast.DoubleQuotedString), []ast.IExpression{ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$message")), ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$code")), ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$previous"))}))), ast.NewExpressionStmt(0, ast.NewSimpleAssignmentExpr(0, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "severity")), ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$severity")))), ast.NewExpressionStmt(0, ast.NewSimpleAssignmentExpr(0, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "file")), ast.NewCoalesceExpr(0, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$filename")), ast.NewStringLiteralExpr(0, nil, "", ast.DoubleQuotedString)))), ast.NewExpressionStmt(0, ast.NewSimpleAssignmentExpr(0, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "line")), ast.NewCoalesceExpr(0, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$line")), ast.NewIntegerLiteralExpr(0, nil, 0))))}), []string{}))
 	ErrorException.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "getSeverity", []string{"public", "final"}, []ast.FunctionParameter{}, ast.NewCompoundStmt(0, []ast.IStatement{ast.NewReturnStmt(0, nil, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "severity")))}), []string{"int"}))
 
-	interpreter.AddClass(ErrorException.Name, ErrorException)
+	if err := interpreter.AddClass(ErrorException.Name, ErrorException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- Error -------------------------------------- MARK: Error
 
@@ -65,7 +70,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	Error.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__toString", []string{"public"}, []ast.FunctionParameter{}, ast.NewCompoundStmt(0, []ast.IStatement{ast.NewReturnStmt(0, nil, ast.NewMemberAccessExpr(0, nil, ast.NewSimpleVariableExpr(0, ast.NewVariableNameExpr(0, nil, "$this")), ast.NewConstantAccessExpr(0, nil, "string")))}), []string{"string"}))
 	Error.AddMethod(ast.NewMethodDefinitionStmt(0, nil, "__clone", []string{"private"}, []ast.FunctionParameter{}, ast.NewCompoundStmt(0, []ast.IStatement{}), []string{"void"}))
 
-	interpreter.AddClass(Error.Name, Error)
+	if err := interpreter.AddClass(Error.Name, Error); err != nil {
+		return err
+	}
 
 	// -------------------------------------- CompileError -------------------------------------- MARK: CompileError
 
@@ -73,7 +80,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	CompileError := ast.NewClassDeclarationStmt(0, nil, "CompileError", false, false)
 	CompileError.BaseClass = "Error"
 
-	interpreter.AddClass(CompileError.Name, CompileError)
+	if err := interpreter.AddClass(CompileError.Name, CompileError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ParseError -------------------------------------- MARK: ParseError
 
@@ -81,7 +90,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ParseError := ast.NewClassDeclarationStmt(0, nil, "ParseError", false, false)
 	ParseError.BaseClass = "CompileError"
 
-	interpreter.AddClass(ParseError.Name, ParseError)
+	if err := interpreter.AddClass(ParseError.Name, ParseError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- TypeError -------------------------------------- MARK: TypeError
 
@@ -89,7 +100,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	TypeError := ast.NewClassDeclarationStmt(0, nil, "TypeError", false, false)
 	TypeError.BaseClass = "Error"
 
-	interpreter.AddClass(TypeError.Name, TypeError)
+	if err := interpreter.AddClass(TypeError.Name, TypeError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ArgumentCountError -------------------------------------- MARK: ArgumentCountError
 
@@ -97,7 +110,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ArgumentCountError := ast.NewClassDeclarationStmt(0, nil, "ArgumentCountError", false, false)
 	ArgumentCountError.BaseClass = "TypeError"
 
-	interpreter.AddClass(ArgumentCountError.Name, ArgumentCountError)
+	if err := interpreter.AddClass(ArgumentCountError.Name, ArgumentCountError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ValueError -------------------------------------- MARK: ValueError
 
@@ -105,7 +120,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ValueError := ast.NewClassDeclarationStmt(0, nil, "ValueError", false, false)
 	ValueError.BaseClass = "Error"
 
-	interpreter.AddClass(ValueError.Name, ValueError)
+	if err := interpreter.AddClass(ValueError.Name, ValueError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ArithmeticError -------------------------------------- MARK: ArithmeticError
 
@@ -114,7 +131,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ArithmeticError := ast.NewClassDeclarationStmt(0, nil, "ArithmeticError", false, false)
 	ArithmeticError.BaseClass = "Error"
 
-	interpreter.AddClass(ArithmeticError.Name, ArithmeticError)
+	if err := interpreter.AddClass(ArithmeticError.Name, ArithmeticError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- DivisionByZeroError -------------------------------------- MARK: DivisionByZeroError
 
@@ -122,7 +141,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	DivisionByZeroError := ast.NewClassDeclarationStmt(0, nil, "DivisionByZeroError", false, false)
 	DivisionByZeroError.BaseClass = "ArithmeticError"
 
-	interpreter.AddClass(DivisionByZeroError.Name, DivisionByZeroError)
+	if err := interpreter.AddClass(DivisionByZeroError.Name, DivisionByZeroError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- UnhandledMatchError -------------------------------------- MARK: UnhandledMatchError
 
@@ -130,7 +151,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	UnhandledMatchError := ast.NewClassDeclarationStmt(0, nil, "UnhandledMatchError", false, false)
 	UnhandledMatchError.BaseClass = "Error"
 
-	interpreter.AddClass(UnhandledMatchError.Name, UnhandledMatchError)
+	if err := interpreter.AddClass(UnhandledMatchError.Name, UnhandledMatchError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- RequestParseBodyException -------------------------------------- MARK: RequestParseBodyException
 
@@ -138,7 +161,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	RequestParseBodyException := ast.NewClassDeclarationStmt(0, nil, "RequestParseBodyException", false, false)
 	RequestParseBodyException.BaseClass = "Exception"
 
-	interpreter.AddClass(RequestParseBodyException.Name, RequestParseBodyException)
+	if err := interpreter.AddClass(RequestParseBodyException.Name, RequestParseBodyException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ClosedGeneratorException -------------------------------------- MARK: ClosedGeneratorException
 
@@ -146,7 +171,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ClosedGeneratorException := ast.NewClassDeclarationStmt(0, nil, "ClosedGeneratorException", false, false)
 	ClosedGeneratorException.BaseClass = "Exception"
 
-	interpreter.AddClass(ClosedGeneratorException.Name, ClosedGeneratorException)
+	if err := interpreter.AddClass(ClosedGeneratorException.Name, ClosedGeneratorException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- FiberError -------------------------------------- MARK: FiberError
 
@@ -154,14 +181,18 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	FiberError := ast.NewClassDeclarationStmt(0, nil, "FiberError", false, false)
 	FiberError.BaseClass = "Error"
 
-	interpreter.AddClass(FiberError.Name, FiberError)
+	if err := interpreter.AddClass(FiberError.Name, FiberError); err != nil {
+		return err
+	}
 
 	// -------------------------------------- stdClass -------------------------------------- MARK: stdClass
 
 	// Spec: https://www.php.net/manual/en/class.stdclass.php
 	stdClass := ast.NewClassDeclarationStmt(0, nil, "stdClass", false, false)
 
-	interpreter.AddClass(stdClass.Name, stdClass)
+	if err := interpreter.AddClass(stdClass.Name, stdClass); err != nil {
+		return err
+	}
 
 	// -------------------------------------- JsonException -------------------------------------- MARK: JsonException
 
@@ -169,7 +200,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	JsonException := ast.NewClassDeclarationStmt(0, nil, "JsonException", false, false)
 	JsonException.BaseClass = "Exception"
 
-	interpreter.AddClass(JsonException.Name, JsonException)
+	if err := interpreter.AddClass(JsonException.Name, JsonException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- ReflectionException -------------------------------------- MARK: ReflectionException
 
@@ -177,7 +210,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	ReflectionException := ast.NewClassDeclarationStmt(0, nil, "ReflectionException", false, false)
 	ReflectionException.BaseClass = "Exception"
 
-	interpreter.AddClass(ReflectionException.Name, ReflectionException)
+	if err := interpreter.AddClass(ReflectionException.Name, ReflectionException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- LogicException -------------------------------------- MARK: LogicException
 
@@ -185,7 +220,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	LogicException := ast.NewClassDeclarationStmt(0, nil, "LogicException", false, false)
 	LogicException.BaseClass = "Exception"
 
-	interpreter.AddClass(LogicException.Name, LogicException)
+	if err := interpreter.AddClass(LogicException.Name, LogicException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- BadFunctionCallException -------------------------------------- MARK: BadFunctionCallException
 
@@ -193,7 +230,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	BadFunctionCallException := ast.NewClassDeclarationStmt(0, nil, "BadFunctionCallException", false, false)
 	BadFunctionCallException.BaseClass = "LogicException"
 
-	interpreter.AddClass(BadFunctionCallException.Name, BadFunctionCallException)
+	if err := interpreter.AddClass(BadFunctionCallException.Name, BadFunctionCallException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- BadMethodCallException -------------------------------------- MARK: BadMethodCallException
 
@@ -201,7 +240,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	BadMethodCallException := ast.NewClassDeclarationStmt(0, nil, "BadMethodCallException", false, false)
 	BadMethodCallException.BaseClass = "BadFunctionCallException"
 
-	interpreter.AddClass(BadMethodCallException.Name, BadMethodCallException)
+	if err := interpreter.AddClass(BadMethodCallException.Name, BadMethodCallException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- DomainException -------------------------------------- MARK: DomainException
 
@@ -209,7 +250,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	DomainException := ast.NewClassDeclarationStmt(0, nil, "DomainException", false, false)
 	DomainException.BaseClass = "LogicException"
 
-	interpreter.AddClass(DomainException.Name, DomainException)
+	if err := interpreter.AddClass(DomainException.Name, DomainException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- InvalidArgumentException -------------------------------------- MARK: InvalidArgumentException
 
@@ -217,7 +260,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	InvalidArgumentException := ast.NewClassDeclarationStmt(0, nil, "InvalidArgumentException", false, false)
 	InvalidArgumentException.BaseClass = "LogicException"
 
-	interpreter.AddClass(InvalidArgumentException.Name, InvalidArgumentException)
+	if err := interpreter.AddClass(InvalidArgumentException.Name, InvalidArgumentException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- LengthException -------------------------------------- MARK: LengthException
 
@@ -225,7 +270,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	LengthException := ast.NewClassDeclarationStmt(0, nil, "LengthException", false, false)
 	LengthException.BaseClass = "LogicException"
 
-	interpreter.AddClass(LengthException.Name, LengthException)
+	if err := interpreter.AddClass(LengthException.Name, LengthException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- OutOfRangeException -------------------------------------- MARK: OutOfRangeException
 
@@ -233,7 +280,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	OutOfRangeException := ast.NewClassDeclarationStmt(0, nil, "OutOfRangeException", false, false)
 	OutOfRangeException.BaseClass = "LogicException"
 
-	interpreter.AddClass(OutOfRangeException.Name, OutOfRangeException)
+	if err := interpreter.AddClass(OutOfRangeException.Name, OutOfRangeException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- RuntimeException -------------------------------------- MARK: RuntimeException
 
@@ -241,7 +290,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	RuntimeException := ast.NewClassDeclarationStmt(0, nil, "RuntimeException", false, false)
 	RuntimeException.BaseClass = "Exception"
 
-	interpreter.AddClass(RuntimeException.Name, RuntimeException)
+	if err := interpreter.AddClass(RuntimeException.Name, RuntimeException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- OutOfBoundsException -------------------------------------- MARK: OutOfBoundsException
 
@@ -249,7 +300,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	OutOfBoundsException := ast.NewClassDeclarationStmt(0, nil, "OutOfBoundsException", false, false)
 	OutOfBoundsException.BaseClass = "RuntimeException"
 
-	interpreter.AddClass(OutOfBoundsException.Name, OutOfBoundsException)
+	if err := interpreter.AddClass(OutOfBoundsException.Name, OutOfBoundsException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- OverflowException -------------------------------------- MARK: OverflowException
 
@@ -257,7 +310,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	OverflowException := ast.NewClassDeclarationStmt(0, nil, "OverflowException", false, false)
 	OverflowException.BaseClass = "RuntimeException"
 
-	interpreter.AddClass(OverflowException.Name, OverflowException)
+	if err := interpreter.AddClass(OverflowException.Name, OverflowException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- RangeException -------------------------------------- MARK: RangeException
 
@@ -265,7 +320,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	RangeException := ast.NewClassDeclarationStmt(0, nil, "RangeException", false, false)
 	RangeException.BaseClass = "RuntimeException"
 
-	interpreter.AddClass(RangeException.Name, RangeException)
+	if err := interpreter.AddClass(RangeException.Name, RangeException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- UnderflowException -------------------------------------- MARK: UnderflowException
 
@@ -273,7 +330,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	UnderflowException := ast.NewClassDeclarationStmt(0, nil, "UnderflowException", false, false)
 	UnderflowException.BaseClass = "RuntimeException"
 
-	interpreter.AddClass(UnderflowException.Name, UnderflowException)
+	if err := interpreter.AddClass(UnderflowException.Name, UnderflowException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- UnexpectedValueException -------------------------------------- MARK: UnexpectedValueException
 
@@ -281,7 +340,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	UnexpectedValueException := ast.NewClassDeclarationStmt(0, nil, "UnexpectedValueException", false, false)
 	UnexpectedValueException.BaseClass = "RuntimeException"
 
-	interpreter.AddClass(UnexpectedValueException.Name, UnexpectedValueException)
+	if err := interpreter.AddClass(UnexpectedValueException.Name, UnexpectedValueException); err != nil {
+		return err
+	}
 
 	// -------------------------------------- AssertionError -------------------------------------- MARK: AssertionError
 
@@ -289,5 +350,9 @@ func RegisterDefaultClasses(interpreter runtime.Interpreter) {
 	AssertionError := ast.NewClassDeclarationStmt(0, nil, "AssertionError", false, false)
 	AssertionError.BaseClass = "Error"
 
-	interpreter.AddClass(AssertionError.Name, AssertionError)
+	if err := interpreter.AddClass(AssertionError.Name, AssertionError); err != nil {
+		return err
+	}
+
+	return nil
 }

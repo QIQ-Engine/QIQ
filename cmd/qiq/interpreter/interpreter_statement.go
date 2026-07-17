@@ -13,71 +13,27 @@ func (interpreter *Interpreter) ProcessStmt(stmt *ast.Statement, _ any) (any, er
 }
 
 // ProcessInterfaceDeclarationStmt implements Visitor.
-func (visitor *Interpreter) ProcessInterfaceDeclarationStmt(stmt *ast.InterfaceDeclarationStatement, _ any) (any, error) {
-	interfaceDecl, found := visitor.GetInterface(stmt.GetQualifiedName())
-	if found {
-		if interfaceDecl.GetPosition().File == nil {
-			return values.NewVoidSlot(),
-				phpError.NewError("Cannot redeclare interface %s in %s", interfaceDecl.GetQualifiedName(), stmt.GetPosString())
-		}
-		return values.NewVoidSlot(),
-			phpError.NewError(
-				"Cannot redeclare interface %s (previously declared in %s) in %s",
-				interfaceDecl.GetQualifiedName(), interfaceDecl.GetPosString(), stmt.GetPosString(),
-			)
-	}
-
-	classDecl, found := visitor.GetClass(stmt.GetQualifiedName())
-	if found {
-		if classDecl.GetPosition().File == nil {
-			return values.NewVoidSlot(),
-				phpError.NewError("Cannot redeclare class %s in %s", classDecl.GetQualifiedName(), stmt.GetPosString())
-		}
-		return values.NewVoidSlot(),
-			phpError.NewError(
-				"Cannot redeclare class %s (previously declared in %s) in %s",
-				classDecl.GetQualifiedName(), classDecl.GetPosString(), stmt.GetPosString(),
-			)
-	}
-
-	visitor.AddInterface(stmt.GetQualifiedName(), stmt)
-	return values.NewVoidSlot(), nil
-}
-
-// ProcessClassDeclarationStmt implements Visitor.
-func (visitor *Interpreter) ProcessClassDeclarationStmt(stmt *ast.ClassDeclarationStatement, _ any) (any, error) {
-	if err := visitor.validateClass(stmt); err != nil {
+func (interpreter *Interpreter) ProcessInterfaceDeclarationStmt(stmt *ast.InterfaceDeclarationStatement, _ any) (any, error) {
+	if err := interpreter.executionContext.HasClassOrInterface(stmt.GetQualifiedName(), stmt.GetPosition()); err != nil {
 		return values.NewVoidSlot(), err
 	}
 
-	interfaceDecl, found := visitor.GetInterface(stmt.GetQualifiedName())
-	if found {
-		if interfaceDecl.GetPosition().File == nil {
-			return values.NewVoidSlot(),
-				phpError.NewError("Cannot redeclare interface %s in %s", interfaceDecl.GetQualifiedName(), stmt.GetPosString())
-		}
-		return values.NewVoidSlot(),
-			phpError.NewError(
-				"Cannot redeclare interface %s (previously declared in %s) in %s",
-				interfaceDecl.GetQualifiedName(), interfaceDecl.GetPosString(), stmt.GetPosString(),
-			)
+	err := interpreter.AddInterface(stmt.GetQualifiedName(), stmt)
+	return values.NewVoidSlot(), err
+}
+
+// ProcessClassDeclarationStmt implements Visitor.
+func (interpreter *Interpreter) ProcessClassDeclarationStmt(stmt *ast.ClassDeclarationStatement, _ any) (any, error) {
+	if err := interpreter.executionContext.HasClassOrInterface(stmt.GetQualifiedName(), stmt.GetPosition()); err != nil {
+		return values.NewVoidSlot(), err
 	}
 
-	classDecl, found := visitor.GetClass(stmt.GetQualifiedName())
-	if found {
-		if classDecl.GetPosition().File == nil {
-			return values.NewVoidSlot(),
-				phpError.NewError("Cannot redeclare class %s in %s", classDecl.GetQualifiedName(), stmt.GetPosString())
-		}
-		return values.NewVoidSlot(),
-			phpError.NewError(
-				"Cannot redeclare class %s (previously declared in %s) in %s",
-				classDecl.GetQualifiedName(), classDecl.GetPosString(), stmt.GetPosString(),
-			)
+	if err := interpreter.validateClass(stmt); err != nil {
+		return values.NewVoidSlot(), err
 	}
 
-	visitor.AddClass(stmt.GetQualifiedName(), stmt)
-	return values.NewVoidSlot(), nil
+	err := interpreter.AddClass(stmt.GetQualifiedName(), stmt)
+	return values.NewVoidSlot(), err
 }
 
 // ProcessConstDeclarationStmt implements Visitor.

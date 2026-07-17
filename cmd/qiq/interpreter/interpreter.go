@@ -61,8 +61,17 @@ func NewInterpreter(executionContext *runtime.ExecutionContext, ini *ini.Ini, r 
 		return interpreter, err
 	}
 
-	interfaces.RegisterDefaultInterfaces(interpreter)
-	classes.RegisterDefaultClasses(interpreter)
+	if !interpreter.executionContext.IsInitializationCompleted() {
+		if err := interfaces.RegisterDefaultInterfaces(interpreter); err != nil {
+			return interpreter, err
+		}
+
+		if err := classes.RegisterDefaultClasses(interpreter); err != nil {
+			return interpreter, err
+		}
+
+		interpreter.executionContext.InitializationCompleted()
+	}
 
 	if ini.GetBool("register_argc_argv") {
 		server := interpreter.env.predefinedVariables["$_SERVER"].Value.(*values.Array)

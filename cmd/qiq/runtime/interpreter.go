@@ -20,11 +20,11 @@ type Interpreter interface {
 	GetRequest() *request.Request
 	GetResponse() *request.Response
 	// Class declarations
-	AddClass(class string, classDecl *ast.ClassDeclarationStatement)
+	AddClass(class string, classDecl *ast.ClassDeclarationStatement) phpError.Error
 	GetClass(class string) (*ast.ClassDeclarationStatement, bool)
 	GetClasses() []string
 	// Interface declarations
-	AddInterface(interfaceName string, interfaceDecl *ast.InterfaceDeclarationStatement)
+	AddInterface(interfaceName string, interfaceDecl *ast.InterfaceDeclarationStatement) phpError.Error
 	GetInterface(interfaceName string) (*ast.InterfaceDeclarationStatement, bool)
 	GetInterfaces() []string
 	// Output

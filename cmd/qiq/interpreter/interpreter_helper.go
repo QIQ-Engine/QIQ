@@ -342,8 +342,8 @@ func ParamTypesToSignature(paramTypes []string) string {
 
 // -------------------------------------- Classes and Interfaces -------------------------------------- MARK: Classes and Interfaces
 
-func (interpreter *Interpreter) AddClass(class string, classDecl *ast.ClassDeclarationStatement) {
-	interpreter.executionContext.AddClass(class, classDecl)
+func (interpreter *Interpreter) AddClass(class string, classDecl *ast.ClassDeclarationStatement) phpError.Error {
+	return interpreter.executionContext.AddClass(class, classDecl)
 }
 
 func (interpreter *Interpreter) GetClass(class string) (*ast.ClassDeclarationStatement, bool) {
@@ -354,8 +354,8 @@ func (interpreter *Interpreter) GetClasses() []string {
 	return interpreter.executionContext.GetClasses()
 }
 
-func (interpreter *Interpreter) AddInterface(interfaceName string, interfaceDecl *ast.InterfaceDeclarationStatement) {
-	interpreter.executionContext.AddInterface(interfaceName, interfaceDecl)
+func (interpreter *Interpreter) AddInterface(interfaceName string, interfaceDecl *ast.InterfaceDeclarationStatement) phpError.Error {
+	return interpreter.executionContext.AddInterface(interfaceName, interfaceDecl)
 }
 
 func (interpreter *Interpreter) GetInterface(interfaceName string) (*ast.InterfaceDeclarationStatement, bool) {
