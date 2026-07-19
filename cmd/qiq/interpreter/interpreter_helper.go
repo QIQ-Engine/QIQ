@@ -111,10 +111,10 @@ func (interpreter *Interpreter) varExprToVarName(expr ast.IExpression, env *Envi
 }
 
 func (interpreter *Interpreter) ErrorToString(err phpError.Error) string {
-	if (err.GetErrorType() == phpError.WarningPhpError && interpreter.ini.GetInt("error_reporting")&phpError.E_WARNING == 0) ||
-		(err.GetErrorType() == phpError.ErrorPhpError && interpreter.ini.GetInt("error_reporting")&phpError.E_ERROR == 0) ||
-		(err.GetErrorType() == phpError.NoticePhpError && interpreter.ini.GetInt("error_reporting")&phpError.E_NOTICE == 0) ||
-		(err.GetErrorType() == phpError.ParsePhpError && interpreter.ini.GetInt("error_reporting")&phpError.E_PARSE == 0) {
+	if (err.GetErrorType() == phpError.WarningPhpError && uint16(interpreter.ini.GetInt("error_reporting"))&phpError.E_WARNING == 0) ||
+		(err.GetErrorType() == phpError.ErrorPhpError && uint16(interpreter.ini.GetInt("error_reporting"))&phpError.E_ERROR == 0) ||
+		(err.GetErrorType() == phpError.NoticePhpError && uint16(interpreter.ini.GetInt("error_reporting"))&phpError.E_NOTICE == 0) ||
+		(err.GetErrorType() == phpError.ParsePhpError && uint16(interpreter.ini.GetInt("error_reporting"))&phpError.E_PARSE == 0) {
 		return ""
 	}
 	return err.GetMessage()
@@ -158,7 +158,7 @@ var literalExprTypeRuntimeValue = map[ast.NodeType]string{
 func literalExprTypeToRuntimeValue(expr ast.IExpression) (string, phpError.Error) {
 	typeStr, found := literalExprTypeRuntimeValue[expr.GetKind()]
 	if !found {
-		return "", phpError.NewError("literalExprTypeToRuntimeValue: No mapping for type %s", expr.GetKind())
+		return "", phpError.NewError("literalExprTypeToRuntimeValue: No mapping for type %s", expr.GetKindString())
 	}
 	return typeStr, nil
 }

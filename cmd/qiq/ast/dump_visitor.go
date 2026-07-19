@@ -70,7 +70,7 @@ func (visitor DumpVisitor) dumpExpressions(expressions []IExpression) string {
 }
 
 func (visitor DumpVisitor) getKindAndPos(stmt IStatement) string {
-	kind := fmt.Sprintf(`"kind": "%s"`, stmt.GetKind())
+	kind := fmt.Sprintf(`"kind": "%s"`, stmt.GetKindString())
 	if !visitor.withPos {
 		return kind
 	}

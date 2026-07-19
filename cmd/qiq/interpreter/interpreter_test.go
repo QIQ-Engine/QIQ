@@ -608,7 +608,7 @@ func TestNumbers(t *testing.T) {
 	testForError(t, `<?php var_dump(1_.0);`, phpError.NewParseError("Unsupported number format detected in %s:1:16", TEST_FILE_NAME))
 	testForError(t, `<?php var_dump(1._0);`, phpError.NewError("Undefined constant \"_0\""))
 	testForError(t, `<?php var_dump(1_e2);`, phpError.NewParseError("Unsupported number format detected in %s:1:16", TEST_FILE_NAME))
-	testForError(t, `<?php var_dump(1e_2);`, phpError.NewParseError("Expected \",\" or \")\". Got: &{Token - type: Name, value: \"e_2\", position: {Position - file: \"%s\", ln: 1, col: 17}}", TEST_FILE_NAME))
+	testForError(t, `<?php var_dump(1e_2);`, phpError.NewParseError("Expected \",\" or \")\". Got: &{Token - type: NameToken, value: \"e_2\", position: {Position - file: \"%s\", ln: 1, col: 17}}", TEST_FILE_NAME))
 
 	// Convertion
 	// intval

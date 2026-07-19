@@ -28,7 +28,7 @@ type Interpreter struct {
 	response           *request.Response
 	parser             *parser.Parser
 	env                *Environment
-	cache              map[int64]values.RuntimeValue
+	cache              map[ast.NodeId]values.RuntimeValue
 	outputBufferStack  *outputBuffer.Stack
 	result             string
 	resultRuntimeValue values.RuntimeValue
@@ -47,7 +47,7 @@ func NewInterpreter(executionContext *runtime.ExecutionContext, ini *ini.Ini, r 
 		request:           r,
 		response:          request.NewResponse(),
 		parser:            parser.NewParser(ini),
-		cache:             map[int64]values.RuntimeValue{},
+		cache:             map[ast.NodeId]values.RuntimeValue{},
 		outputBufferStack: outputBuffer.NewStack(),
 	}
 
