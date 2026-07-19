@@ -104,7 +104,7 @@ func (parser *Parser) expectTokenType(tokenType lexer.TokenType, eat bool) phpEr
 	if parser.isTokenType(tokenType, eat) {
 		return nil
 	}
-	return phpError.NewParseError("Unexpected token %s. Expected: %s", parser.at().TokenType, tokenType)
+	return phpError.NewParseError("Unexpected token %s. Expected: %s", parser.at().TokenTypeString(), lexer.TokenTypeToString(tokenType))
 }
 
 func (parser *Parser) expect(tokenType lexer.TokenType, value string, eat bool) phpError.Error {

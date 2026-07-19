@@ -6,31 +6,36 @@ import (
 	"strings"
 )
 
+type NodeId uint32
+
 // -------------------------------------- Statement -------------------------------------- MARK: Statement
 
 type IStatement interface {
-	GetId() int64
+	GetId() NodeId
 	GetKind() NodeType
+	GetKindString() string
 	GetPosition() *position.Position
 	GetPosString() string
 	Process(visitor Visitor, context any) (any, error)
 }
 
 type Statement struct {
-	id   int64
+	id   NodeId
 	kind NodeType
 	pos  *position.Position
 }
 
 func NewEmptyStmt() *Statement { return &Statement{kind: EmptyNode} }
 
-func NewStmt(id int64, kind NodeType, pos *position.Position) *Statement {
+func NewStmt(id NodeId, kind NodeType, pos *position.Position) *Statement {
 	return &Statement{id: id, kind: kind, pos: pos}
 }
 
-func (stmt *Statement) GetId() int64 { return stmt.id }
+func (stmt *Statement) GetId() NodeId { return stmt.id }
 
 func (stmt *Statement) GetKind() NodeType { return stmt.kind }
+
+func (stmt *Statement) GetKindString() string { return NodeTypeToString(stmt.kind) }
 
 func (stmt *Statement) GetPosition() *position.Position {
 	if stmt.pos == nil {
@@ -57,7 +62,7 @@ type MethodDefinitionStatement struct {
 	Class      *ClassDeclarationStatement
 }
 
-func NewMethodDefinitionStmt(id int64, pos *position.Position, name string, modifiers []string, params []FunctionParameter, body *CompoundStatement, returnType []string) *MethodDefinitionStatement {
+func NewMethodDefinitionStmt(id NodeId, pos *position.Position, name string, modifiers []string, params []FunctionParameter, body *CompoundStatement, returnType []string) *MethodDefinitionStatement {
 	return &MethodDefinitionStatement{Statement: NewStmt(id, MethodDefinitionStmt, pos),
 		Name:       name,
 		Modifiers:  modifiers,
@@ -105,7 +110,7 @@ type FunctionDefinitionStatement struct {
 	ReturnType   []string
 }
 
-func NewFunctionDefinitionStmt(id int64, pos *position.Position, functionName string, params []FunctionParameter, body *CompoundStatement, returnType []string) *FunctionDefinitionStatement {
+func NewFunctionDefinitionStmt(id NodeId, pos *position.Position, functionName string, params []FunctionParameter, body *CompoundStatement, returnType []string) *FunctionDefinitionStatement {
 	return &FunctionDefinitionStatement{Statement: NewStmt(id, FunctionDefinitionStmt, pos),
 		FunctionName: functionName, Params: params, Body: body, ReturnType: returnType,
 	}
@@ -125,7 +130,7 @@ type ForStatement struct {
 	Block       IStatement
 }
 
-func NewForStmt(id int64, pos *position.Position, initializer *CompoundStatement, control *CompoundStatement, endOfLoop *CompoundStatement, block IStatement) *ForStatement {
+func NewForStmt(id NodeId, pos *position.Position, initializer *CompoundStatement, control *CompoundStatement, endOfLoop *CompoundStatement, block IStatement) *ForStatement {
 	return &ForStatement{Statement: NewStmt(id, ForStmt, pos), Initializer: initializer, Control: control, EndOfLoop: endOfLoop, Block: block}
 }
 
@@ -141,7 +146,7 @@ type WhileStatement struct {
 	Block     IStatement
 }
 
-func NewWhileStmt(id int64, pos *position.Position, condition IExpression, block IStatement) *WhileStatement {
+func NewWhileStmt(id NodeId, pos *position.Position, condition IExpression, block IStatement) *WhileStatement {
 	return &WhileStatement{Statement: NewStmt(id, WhileStmt, pos), Condition: condition, Block: block}
 }
 
@@ -155,7 +160,7 @@ type DoStatement struct {
 	*WhileStatement
 }
 
-func NewDoStmt(id int64, pos *position.Position, condition IExpression, block IStatement) *DoStatement {
+func NewDoStmt(id NodeId, pos *position.Position, condition IExpression, block IStatement) *DoStatement {
 	return &DoStatement{&WhileStatement{Statement: NewStmt(id, DoStmt, pos), Condition: condition, Block: block}}
 }
 
@@ -173,7 +178,7 @@ type IfStatement struct {
 	ElseBlock IStatement
 }
 
-func NewIfStmt(id int64, pos *position.Position, condition IExpression, ifBlock IStatement, elseIf []*IfStatement, elseBlock IStatement) *IfStatement {
+func NewIfStmt(id NodeId, pos *position.Position, condition IExpression, ifBlock IStatement, elseIf []*IfStatement, elseBlock IStatement) *IfStatement {
 	return &IfStatement{Statement: NewStmt(id, IfStmt, pos), Condition: condition, IfBlock: ifBlock, ElseIf: elseIf, ElseBlock: elseBlock}
 }
 
@@ -188,7 +193,7 @@ type CompoundStatement struct {
 	Statements []IStatement
 }
 
-func NewCompoundStmt(id int64, statements []IStatement) *CompoundStatement {
+func NewCompoundStmt(id NodeId, statements []IStatement) *CompoundStatement {
 	return &CompoundStatement{Statement: NewStmt(id, CompoundStmt, nil), Statements: statements}
 }
 
@@ -203,7 +208,7 @@ type EchoStatement struct {
 	Expressions []IExpression
 }
 
-func NewEchoStmt(id int64, pos *position.Position, expressions []IExpression) *EchoStatement {
+func NewEchoStmt(id NodeId, pos *position.Position, expressions []IExpression) *EchoStatement {
 	return &EchoStatement{Statement: NewStmt(id, EchoStmt, pos), Expressions: expressions}
 }
 
@@ -220,7 +225,7 @@ type ClassConstDeclarationStatement struct {
 	Visiblity string
 }
 
-func NewClassConstDeclarationStmt(id int64, pos *position.Position, name string, value IExpression, visibility string) *ClassConstDeclarationStatement {
+func NewClassConstDeclarationStmt(id NodeId, pos *position.Position, name string, value IExpression, visibility string) *ClassConstDeclarationStatement {
 	return &ClassConstDeclarationStatement{Statement: NewStmt(id, ClassConstDeclarationStmt, pos), Name: name, Value: value, Visiblity: visibility}
 }
 
@@ -235,7 +240,7 @@ type TraitUseStatement struct {
 	Name string
 }
 
-func NewTraitUseStmt(id int64, pos *position.Position, name string) *TraitUseStatement {
+func NewTraitUseStmt(id NodeId, pos *position.Position, name string) *TraitUseStatement {
 	return &TraitUseStatement{Statement: NewStmt(id, ClassConstDeclarationStmt, pos), Name: name}
 }
 
@@ -251,7 +256,7 @@ type ConstDeclarationStatement struct {
 	Value IExpression
 }
 
-func NewConstDeclarationStmt(id int64, pos *position.Position, name string, value IExpression) *ConstDeclarationStatement {
+func NewConstDeclarationStmt(id NodeId, pos *position.Position, name string, value IExpression) *ConstDeclarationStatement {
 	return &ConstDeclarationStatement{Statement: NewStmt(id, ConstDeclarationStmt, pos), Name: name, Value: value}
 }
 
@@ -266,7 +271,7 @@ type ExpressionStatement struct {
 	Expr IExpression
 }
 
-func NewExpressionStmt(id int64, expr IExpression) *ExpressionStatement {
+func NewExpressionStmt(id NodeId, expr IExpression) *ExpressionStatement {
 	return &ExpressionStatement{Statement: NewStmt(id, ExpressionStmt, expr.GetPosition()), Expr: expr}
 }
 
@@ -280,7 +285,7 @@ type BreakStatement struct {
 	*ExpressionStatement
 }
 
-func NewBreakStmt(id int64, pos *position.Position, expr IExpression) *BreakStatement {
+func NewBreakStmt(id NodeId, pos *position.Position, expr IExpression) *BreakStatement {
 	return &BreakStatement{&ExpressionStatement{Statement: NewStmt(id, BreakStmt, pos), Expr: expr}}
 }
 
@@ -294,7 +299,7 @@ type ContinueStatement struct {
 	*ExpressionStatement
 }
 
-func NewContinueStmt(id int64, pos *position.Position, expr IExpression) *ContinueStatement {
+func NewContinueStmt(id NodeId, pos *position.Position, expr IExpression) *ContinueStatement {
 	return &ContinueStatement{&ExpressionStatement{Statement: NewStmt(id, ContinueStmt, pos), Expr: expr}}
 }
 
@@ -308,7 +313,7 @@ type ReturnStatement struct {
 	*ExpressionStatement
 }
 
-func NewReturnStmt(id int64, pos *position.Position, expr IExpression) *ReturnStatement {
+func NewReturnStmt(id NodeId, pos *position.Position, expr IExpression) *ReturnStatement {
 	return &ReturnStatement{&ExpressionStatement{Statement: NewStmt(id, ReturnStmt, pos), Expr: expr}}
 }
 
@@ -323,7 +328,7 @@ type GlobalDeclarationStatement struct {
 	Variables []IExpression
 }
 
-func NewGlobalDeclarationStmt(id int64, pos *position.Position, variables []IExpression) *GlobalDeclarationStatement {
+func NewGlobalDeclarationStmt(id NodeId, pos *position.Position, variables []IExpression) *GlobalDeclarationStatement {
 	return &GlobalDeclarationStatement{Statement: NewStmt(id, GlobalDeclarationStmt, pos), Variables: variables}
 }
 
@@ -342,7 +347,7 @@ type PropertyDeclarationStatement struct {
 	InitialValue IExpression
 }
 
-func NewPropertyDeclarationStmt(id int64, pos *position.Position, name, visibility string, isStatic bool, pType []string, initialValue IExpression) *PropertyDeclarationStatement {
+func NewPropertyDeclarationStmt(id NodeId, pos *position.Position, name, visibility string, isStatic bool, pType []string, initialValue IExpression) *PropertyDeclarationStatement {
 	return &PropertyDeclarationStatement{
 		Statement:    NewStmt(id, PropertyDeclarationStmt, pos),
 		Name:         name,
@@ -374,7 +379,7 @@ type ClassDeclarationStatement struct {
 	Traits         []*TraitUseStatement
 }
 
-func NewClassDeclarationStmt(id int64, pos *position.Position, name string, isAbstract, isFinal bool) *ClassDeclarationStatement {
+func NewClassDeclarationStmt(id NodeId, pos *position.Position, name string, isAbstract, isFinal bool) *ClassDeclarationStatement {
 	return &ClassDeclarationStatement{
 		Statement:      NewStmt(id, ClassDeclarationStmt, pos),
 		Name:           name,
@@ -441,7 +446,7 @@ type ThrowStatement struct {
 	Expr IExpression
 }
 
-func NewThrowStmt(id int64, pos *position.Position, expr IExpression) *ThrowStatement {
+func NewThrowStmt(id NodeId, pos *position.Position, expr IExpression) *ThrowStatement {
 	return &ThrowStatement{Statement: NewStmt(id, ThrowStmt, pos), Expr: expr}
 }
 
@@ -457,7 +462,7 @@ type DeclareStatement struct {
 	Literal   IExpression
 }
 
-func NewDeclareStmt(id int64, pos *position.Position, directive string, literal IExpression) *DeclareStatement {
+func NewDeclareStmt(id NodeId, pos *position.Position, directive string, literal IExpression) *DeclareStatement {
 	return &DeclareStatement{Statement: NewStmt(id, DeclareStmt, pos), Directive: directive, Literal: literal}
 }
 
@@ -476,7 +481,7 @@ type ForeachStatement struct {
 	Block      IStatement
 }
 
-func NewForeachStmt(id int64, pos *position.Position, collection, key, value IExpression, byRef bool, block IStatement) *ForeachStatement {
+func NewForeachStmt(id NodeId, pos *position.Position, collection, key, value IExpression, byRef bool, block IStatement) *ForeachStatement {
 	return &ForeachStatement{
 		Statement:  NewStmt(id, ForeachStmt, pos),
 		Collection: collection,
@@ -502,7 +507,7 @@ type InterfaceDeclarationStatement struct {
 	Methods     map[string]*MethodDefinitionStatement
 }
 
-func NewInterfaceDeclarationStmt(id int64, pos *position.Position, name string) *InterfaceDeclarationStatement {
+func NewInterfaceDeclarationStmt(id NodeId, pos *position.Position, name string) *InterfaceDeclarationStatement {
 	return &InterfaceDeclarationStatement{
 		Statement:   NewStmt(id, InterfaceDeclarationStmt, pos),
 		Name:        name,
@@ -563,7 +568,7 @@ type TryStatement struct {
 	Finally *CompoundStatement
 }
 
-func NewTryStmt(id int64, pos *position.Position, body *CompoundStatement) *TryStatement {
+func NewTryStmt(id NodeId, pos *position.Position, body *CompoundStatement) *TryStatement {
 	return &TryStatement{
 		Statement: NewStmt(id, TryStmt, pos),
 		Body:      body,

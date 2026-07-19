@@ -437,7 +437,7 @@ func (parser *Parser) parseClassConstrutorDeclaration(class *ast.ClassDeclaratio
 		return isConstructor, err
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return isConstructor, phpError.NewParseError("Expected compound statement. Got %s", body.GetKind())
+		return isConstructor, phpError.NewParseError("Expected compound statement. Got %s", body.GetKindString())
 	}
 
 	// TODO byRef: &(opt)
@@ -505,7 +505,7 @@ func (parser *Parser) parseClassDestrutorDeclaration(class *ast.ClassDeclaration
 		return isDestructor, err
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return isDestructor, phpError.NewParseError("Expected compound statement. Got %s", body.GetKind())
+		return isDestructor, phpError.NewParseError("Expected compound statement. Got %s", body.GetKindString())
 	}
 
 	// TODO byRef: &(opt)
@@ -623,7 +623,7 @@ func (parser *Parser) parseClassMethodDeclaration(class ast.AddGetMethod, isClas
 		return isMethod, err, nil
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return isMethod, phpError.NewParseError("Expected compound statement. Got %s", body.GetKind()), nil
+		return isMethod, phpError.NewParseError("Expected compound statement. Got %s", body.GetKindString()), nil
 	}
 
 	methodDef, found := class.GetMethod(name)

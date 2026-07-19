@@ -163,7 +163,7 @@ func (interpreter *Interpreter) ProcessSimpleAssignmentExpr(expr *ast.SimpleAssi
 
 	if currentValue.GetType() == values.ObjectValue && expr.Variable.GetKind() == ast.MemberAccessExpr {
 		if expr.Variable.(*ast.MemberAccessExpression).Member.GetKind() != ast.ConstantAccessExpr {
-			return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Object: Unsupported member type %s", expr.Variable.(*ast.MemberAccessExpression).Member.GetKind())
+			return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Object: Unsupported member type %s", expr.Variable.(*ast.MemberAccessExpression).Member.GetKindString())
 		}
 
 		propertyName := expr.Variable.(*ast.MemberAccessExpression).Member.(*ast.ConstantAccessExpression).ConstantName
@@ -1157,7 +1157,7 @@ func (interpreter *Interpreter) ProcessMemberAccessExpr(stmt *ast.MemberAccessEx
 			return result, nil
 		}
 
-		return values.NewVoidSlot(), phpError.NewError("ProcessMemberAccessExpr - scoped: Unsupported member type %s in %s", stmt.Member.GetKind(), stmt.Member.GetPosString())
+		return values.NewVoidSlot(), phpError.NewError("ProcessMemberAccessExpr - scoped: Unsupported member type %s in %s", stmt.Member.GetKindString(), stmt.Member.GetPosString())
 	} else {
 		variableName := mustOrVoid(interpreter.varExprToVarName(stmt.Object, env.(*Environment)))
 		runtimeObject, err := env.(*Environment).LookupVariable(variableName)
@@ -1238,7 +1238,7 @@ func (interpreter *Interpreter) ProcessMemberAccessExpr(stmt *ast.MemberAccessEx
 			return result, nil
 		}
 
-		return values.NewVoidSlot(), phpError.NewError("ProcessMemberAccessExpr: Unsupported member type %s in %s", stmt.Member.GetKind(), stmt.Member.GetPosString())
+		return values.NewVoidSlot(), phpError.NewError("ProcessMemberAccessExpr: Unsupported member type %s in %s", stmt.Member.GetKindString(), stmt.Member.GetPosString())
 	}
 }
 

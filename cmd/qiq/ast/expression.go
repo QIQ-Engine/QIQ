@@ -11,7 +11,7 @@ type IExpression interface {
 }
 
 type Expression struct {
-	id   int64
+	id   NodeId
 	kind NodeType
 	pos  *position.Position
 }
@@ -20,13 +20,15 @@ func NewEmptyExpr() *Expression {
 	return NewExpr(0, EmptyNode, nil)
 }
 
-func NewExpr(id int64, kind NodeType, pos *position.Position) *Expression {
+func NewExpr(id NodeId, kind NodeType, pos *position.Position) *Expression {
 	return &Expression{id: id, kind: kind, pos: pos}
 }
 
-func (stmt *Expression) GetId() int64 { return stmt.id }
+func (expr *Expression) GetId() NodeId { return expr.id }
 
 func (expr *Expression) GetKind() NodeType { return expr.kind }
+
+func (expr *Expression) GetKindString() string { return NodeTypeToString(expr.kind) }
 
 func (expr *Expression) GetPosition() *position.Position {
 	if expr.pos == nil {
@@ -48,7 +50,7 @@ type ParenthesizedExpression struct {
 	Expr IExpression
 }
 
-func NewParenthesizedExpr(id int64, pos *position.Position, expr IExpression) *ParenthesizedExpression {
+func NewParenthesizedExpr(id NodeId, pos *position.Position, expr IExpression) *ParenthesizedExpression {
 	return &ParenthesizedExpression{Expression: NewExpr(id, ParenthesizedExpr, pos), Expr: expr}
 }
 
@@ -63,7 +65,7 @@ type ErrorControlExpression struct {
 	Expr IExpression
 }
 
-func NewErrorControlExpr(id int64, pos *position.Position, expr IExpression) *ErrorControlExpression {
+func NewErrorControlExpr(id NodeId, pos *position.Position, expr IExpression) *ErrorControlExpression {
 	return &ErrorControlExpression{Expression: NewExpr(id, ErrorControlExpr, pos), Expr: expr}
 }
 
@@ -77,7 +79,7 @@ type PrintExpression struct {
 	*ParenthesizedExpression
 }
 
-func NewPrintExpr(id int64, pos *position.Position, expr IExpression) *PrintExpression {
+func NewPrintExpr(id NodeId, pos *position.Position, expr IExpression) *PrintExpression {
 	return &PrintExpression{&ParenthesizedExpression{Expression: NewExpr(id, PrintExpr, pos), Expr: expr}}
 }
 
@@ -92,7 +94,7 @@ type TextExpression struct {
 	Value string
 }
 
-func NewTextExpr(id int64, value string) *TextExpression {
+func NewTextExpr(id NodeId, value string) *TextExpression {
 	return &TextExpression{Expression: NewExpr(id, TextNode, nil), Value: value}
 }
 
@@ -107,7 +109,7 @@ type VariableNameExpression struct {
 	VariableName string
 }
 
-func NewVariableNameExpr(id int64, pos *position.Position, variableName string) *VariableNameExpression {
+func NewVariableNameExpr(id NodeId, pos *position.Position, variableName string) *VariableNameExpression {
 	return &VariableNameExpression{Expression: NewExpr(id, VariableNameExpr, pos), VariableName: variableName}
 }
 
@@ -122,7 +124,7 @@ type SimpleVariableExpression struct {
 	VariableName IExpression
 }
 
-func NewSimpleVariableExpr(id int64, variableName IExpression) *SimpleVariableExpression {
+func NewSimpleVariableExpr(id NodeId, variableName IExpression) *SimpleVariableExpression {
 	return &SimpleVariableExpression{Expression: NewExpr(id, SimpleVariableExpr, variableName.GetPosition()), VariableName: variableName}
 }
 
@@ -138,7 +140,7 @@ type SubscriptExpression struct {
 	Index    IExpression
 }
 
-func NewSubscriptExpr(id int64, variable IExpression, index IExpression) *SubscriptExpression {
+func NewSubscriptExpr(id NodeId, variable IExpression, index IExpression) *SubscriptExpression {
 	return &SubscriptExpression{Expression: NewExpr(id, SubscriptExpr, variable.GetPosition()), Variable: variable, Index: index}
 }
 
@@ -154,7 +156,7 @@ type FunctionCallExpression struct {
 	Arguments    []IExpression
 }
 
-func NewFunctionCallExpr(id int64, pos *position.Position, functionName IExpression, arguments []IExpression) *FunctionCallExpression {
+func NewFunctionCallExpr(id NodeId, pos *position.Position, functionName IExpression, arguments []IExpression) *FunctionCallExpression {
 	return &FunctionCallExpression{Expression: NewExpr(id, FunctionCallExpr, pos), FunctionName: functionName, Arguments: arguments}
 }
 
@@ -168,7 +170,7 @@ type ExitIntrinsicExpression struct {
 	*FunctionCallExpression
 }
 
-func NewExitIntrinsic(id int64, pos *position.Position, expression IExpression) *ExitIntrinsicExpression {
+func NewExitIntrinsic(id NodeId, pos *position.Position, expression IExpression) *ExitIntrinsicExpression {
 	return &ExitIntrinsicExpression{FunctionCallExpression: &FunctionCallExpression{
 		Expression:   NewExpr(id, ExitIntrinsicExpr, pos),
 		FunctionName: NewStringLiteralExpr(id, pos, "exit", SingleQuotedString),
@@ -186,7 +188,7 @@ type EmptyIntrinsicExpression struct {
 	*FunctionCallExpression
 }
 
-func NewEmptyIntrinsic(id int64, pos *position.Position, expression IExpression) *EmptyIntrinsicExpression {
+func NewEmptyIntrinsic(id NodeId, pos *position.Position, expression IExpression) *EmptyIntrinsicExpression {
 	return &EmptyIntrinsicExpression{&FunctionCallExpression{
 		Expression:   NewExpr(id, EmptyIntrinsicExpr, pos),
 		FunctionName: NewStringLiteralExpr(id, pos, "empty", SingleQuotedString),
@@ -204,7 +206,7 @@ type EvalIntrinsicExpression struct {
 	*FunctionCallExpression
 }
 
-func NewEvalIntrinsic(id int64, pos *position.Position, expression IExpression) *EvalIntrinsicExpression {
+func NewEvalIntrinsic(id NodeId, pos *position.Position, expression IExpression) *EvalIntrinsicExpression {
 	return &EvalIntrinsicExpression{&FunctionCallExpression{
 		Expression:   NewExpr(id, EvalIntrinsicExpr, pos),
 		FunctionName: NewStringLiteralExpr(id, pos, "eval", SingleQuotedString),
@@ -222,7 +224,7 @@ type IssetIntrinsicExpression struct {
 	*FunctionCallExpression
 }
 
-func NewIssetIntrinsic(id int64, pos *position.Position, arguments []IExpression) *IssetIntrinsicExpression {
+func NewIssetIntrinsic(id NodeId, pos *position.Position, arguments []IExpression) *IssetIntrinsicExpression {
 	return &IssetIntrinsicExpression{&FunctionCallExpression{
 		Expression:   NewExpr(id, IssetIntrinsicExpr, pos),
 		FunctionName: NewStringLiteralExpr(id, pos, "isset", SingleQuotedString),
@@ -240,7 +242,7 @@ type UnsetIntrinsicExpression struct {
 	*FunctionCallExpression
 }
 
-func NewUnsetIntrinsic(id int64, pos *position.Position, arguments []IExpression) *UnsetIntrinsicExpression {
+func NewUnsetIntrinsic(id NodeId, pos *position.Position, arguments []IExpression) *UnsetIntrinsicExpression {
 	return &UnsetIntrinsicExpression{&FunctionCallExpression{
 		Expression:   NewExpr(id, UnsetIntrinsicExpr, pos),
 		FunctionName: NewStringLiteralExpr(id, pos, "unset", SingleQuotedString),
@@ -259,7 +261,7 @@ type ConstantAccessExpression struct {
 	ConstantName string
 }
 
-func NewConstantAccessExpr(id int64, pos *position.Position, constantName string) *ConstantAccessExpression {
+func NewConstantAccessExpr(id NodeId, pos *position.Position, constantName string) *ConstantAccessExpression {
 	return &ConstantAccessExpression{Expression: NewExpr(id, ConstantAccessExpr, pos), ConstantName: constantName}
 }
 
@@ -276,7 +278,7 @@ type ArrayLiteralExpression struct {
 	arrayNextKeyId int64
 }
 
-func NewArrayLiteralExpr(id int64, pos *position.Position) *ArrayLiteralExpression {
+func NewArrayLiteralExpr(id NodeId, pos *position.Position) *ArrayLiteralExpression {
 	return &ArrayLiteralExpression{
 		Expression: NewExpr(id, ArrayLiteralExpr, pos),
 		Keys:       []IExpression{},
@@ -286,7 +288,7 @@ func NewArrayLiteralExpr(id int64, pos *position.Position) *ArrayLiteralExpressi
 
 func (expr *ArrayLiteralExpression) AddElement(key IExpression, value IExpression) {
 	if key == nil {
-		key = NewArrayNextKey(expr.arrayNextKeyId)
+		key = NewArrayNextKey(NodeId(expr.arrayNextKeyId))
 		expr.arrayNextKeyId++
 	}
 	expr.Keys = append(expr.Keys, key)
@@ -298,21 +300,26 @@ func (expr *ArrayLiteralExpression) Process(visitor Visitor, context any) (any, 
 }
 
 type ArrayNextKeyExpression struct {
-	id int64
+	id NodeId
 }
 
-func NewArrayNextKey(id int64) *ArrayNextKeyExpression {
+func NewArrayNextKey(id NodeId) *ArrayNextKeyExpression {
 	return &ArrayNextKeyExpression{id: id}
 }
 
 // GetId implements IExpression.
-func (expr *ArrayNextKeyExpression) GetId() int64 {
+func (expr *ArrayNextKeyExpression) GetId() NodeId {
 	return expr.id
 }
 
 // GetKind implements IExpression.
 func (expr *ArrayNextKeyExpression) GetKind() NodeType {
 	return ArrayNextKeyExpr
+}
+
+// GetKind implements IExpression.
+func (expr *ArrayNextKeyExpression) GetKindString() string {
+	return "ArrayNextKeyExpr"
 }
 
 // GetPosition implements IExpression.
@@ -331,7 +338,7 @@ func (expr *ArrayNextKeyExpression) Process(visitor Visitor, context any) (any, 
 
 // -------------------------------------- BooleanLiteralExpression -------------------------------------- MARK: BooleanLiteralExpression
 
-func NewBooleanLiteralExpr(id int64, pos *position.Position, value bool) *ConstantAccessExpression {
+func NewBooleanLiteralExpr(id NodeId, pos *position.Position, value bool) *ConstantAccessExpression {
 	if value {
 		return NewConstantAccessExpr(id, pos, "TRUE")
 	}
@@ -345,7 +352,7 @@ type IntegerLiteralExpression struct {
 	Value int64
 }
 
-func NewIntegerLiteralExpr(id int64, pos *position.Position, value int64) *IntegerLiteralExpression {
+func NewIntegerLiteralExpr(id NodeId, pos *position.Position, value int64) *IntegerLiteralExpression {
 	return &IntegerLiteralExpression{Expression: NewExpr(id, IntegerLiteralExpr, pos), Value: value}
 }
 
@@ -360,7 +367,7 @@ type FloatingLiteralExpression struct {
 	Value float64
 }
 
-func NewFloatingLiteralExpr(id int64, pos *position.Position, value float64) *FloatingLiteralExpression {
+func NewFloatingLiteralExpr(id NodeId, pos *position.Position, value float64) *FloatingLiteralExpression {
 	return &FloatingLiteralExpression{Expression: NewExpr(id, FloatingLiteralExpr, pos), Value: value}
 }
 
@@ -384,7 +391,7 @@ type StringLiteralExpression struct {
 	Value      string
 }
 
-func NewStringLiteralExpr(id int64, pos *position.Position, value string, stringType StringType) *StringLiteralExpression {
+func NewStringLiteralExpr(id NodeId, pos *position.Position, value string, stringType StringType) *StringLiteralExpression {
 	return &StringLiteralExpression{Expression: NewExpr(id, StringLiteralExpr, pos), Value: value, StringType: stringType}
 }
 
@@ -394,7 +401,7 @@ func (stmt *StringLiteralExpression) Process(visitor Visitor, context any) (any,
 
 // -------------------------------------- NullLiteralExpression -------------------------------------- MARK: NullLiteralExpression
 
-func NewNullLiteralExpr(id int64, pos *position.Position) *ConstantAccessExpression {
+func NewNullLiteralExpr(id NodeId, pos *position.Position) *ConstantAccessExpression {
 	return NewConstantAccessExpr(id, pos, "NULL")
 }
 
@@ -406,7 +413,7 @@ type SimpleAssignmentExpression struct {
 	Value    IExpression
 }
 
-func NewSimpleAssignmentExpr(id int64, variable IExpression, value IExpression) *SimpleAssignmentExpression {
+func NewSimpleAssignmentExpr(id NodeId, variable IExpression, value IExpression) *SimpleAssignmentExpression {
 	return &SimpleAssignmentExpression{Expression: NewExpr(id, SimpleAssignmentExpr, variable.GetPosition()), Variable: variable, Value: value}
 }
 
@@ -423,7 +430,7 @@ type CompoundAssignmentExpression struct {
 	Value    IExpression
 }
 
-func NewCompoundAssignmentExpr(id int64, variable IExpression, operator string, value IExpression) *CompoundAssignmentExpression {
+func NewCompoundAssignmentExpr(id NodeId, variable IExpression, operator string, value IExpression) *CompoundAssignmentExpression {
 	return &CompoundAssignmentExpression{
 		Expression: NewExpr(id, CompoundAssignmentExpr, variable.GetPosition()), Variable: variable, Operator: operator, Value: value,
 	}
@@ -442,7 +449,7 @@ type ConditionalExpression struct {
 	ElseExpr IExpression
 }
 
-func NewConditionalExpr(id int64, cond IExpression, ifExpr IExpression, elseExpr IExpression) *ConditionalExpression {
+func NewConditionalExpr(id NodeId, cond IExpression, ifExpr IExpression, elseExpr IExpression) *ConditionalExpression {
 	return &ConditionalExpression{Expression: NewExpr(id, ConditionalExpr, cond.GetPosition()), Cond: cond, IfExpr: ifExpr, ElseExpr: elseExpr}
 }
 
@@ -458,7 +465,7 @@ type CoalesceExpression struct {
 	ElseExpr IExpression
 }
 
-func NewCoalesceExpr(id int64, cond IExpression, elseExpr IExpression) *CoalesceExpression {
+func NewCoalesceExpr(id NodeId, cond IExpression, elseExpr IExpression) *CoalesceExpression {
 	return &CoalesceExpression{Expression: NewExpr(id, CoalesceExpr, cond.GetPosition()), Cond: cond, ElseExpr: elseExpr}
 }
 
@@ -475,7 +482,7 @@ type BinaryOpExpression struct {
 	Rhs      IExpression
 }
 
-func NewBinaryOpExpr(id int64, lhs IExpression, operator string, rhs IExpression) *BinaryOpExpression {
+func NewBinaryOpExpr(id NodeId, lhs IExpression, operator string, rhs IExpression) *BinaryOpExpression {
 	return &BinaryOpExpression{Expression: NewExpr(id, BinaryOpExpr, lhs.GetPosition()), Lhs: lhs, Operator: operator, Rhs: rhs}
 }
 
@@ -489,7 +496,7 @@ type LogicalExpression struct {
 	*BinaryOpExpression
 }
 
-func NewLogicalExpr(id int64, lhs IExpression, operator string, rhs IExpression) *LogicalExpression {
+func NewLogicalExpr(id NodeId, lhs IExpression, operator string, rhs IExpression) *LogicalExpression {
 	return &LogicalExpression{&BinaryOpExpression{Expression: NewExpr(id, BinaryOpExpr, lhs.GetPosition()), Lhs: lhs, Operator: operator, Rhs: rhs}}
 }
 
@@ -503,7 +510,7 @@ type RelationalExpression struct {
 	*BinaryOpExpression
 }
 
-func NewRelationalExpr(id int64, lhs IExpression, operator string, rhs IExpression) *RelationalExpression {
+func NewRelationalExpr(id NodeId, lhs IExpression, operator string, rhs IExpression) *RelationalExpression {
 	return &RelationalExpression{&BinaryOpExpression{Expression: NewExpr(id, RelationalExpr, lhs.GetPosition()), Lhs: lhs, Operator: operator, Rhs: rhs}}
 }
 
@@ -517,7 +524,7 @@ type EqualityExpression struct {
 	*BinaryOpExpression
 }
 
-func NewEqualityExpr(id int64, lhs IExpression, operator string, rhs IExpression) *EqualityExpression {
+func NewEqualityExpr(id NodeId, lhs IExpression, operator string, rhs IExpression) *EqualityExpression {
 	return &EqualityExpression{&BinaryOpExpression{Expression: NewExpr(id, EqualityExpr, lhs.GetPosition()), Lhs: lhs, Operator: operator, Rhs: rhs}}
 }
 
@@ -533,7 +540,7 @@ type UnaryOpExpression struct {
 	Expr     IExpression
 }
 
-func NewUnaryOpExpr(id int64, pos *position.Position, operator string, expression IExpression) *UnaryOpExpression {
+func NewUnaryOpExpr(id NodeId, pos *position.Position, operator string, expression IExpression) *UnaryOpExpression {
 	return &UnaryOpExpression{Expression: NewExpr(id, UnaryOpExpr, pos), Operator: operator, Expr: expression}
 }
 
@@ -547,7 +554,7 @@ type PrefixIncExpression struct {
 	*UnaryOpExpression
 }
 
-func NewPrefixIncExpr(id int64, pos *position.Position, expression IExpression, operator string) *PrefixIncExpression {
+func NewPrefixIncExpr(id NodeId, pos *position.Position, expression IExpression, operator string) *PrefixIncExpression {
 	return &PrefixIncExpression{&UnaryOpExpression{Expression: NewExpr(id, PrefixIncExpr, pos), Operator: operator, Expr: expression}}
 }
 
@@ -561,7 +568,7 @@ type PostfixIncExpression struct {
 	*UnaryOpExpression
 }
 
-func NewPostfixIncExpr(id int64, pos *position.Position, expression IExpression, operator string) *PostfixIncExpression {
+func NewPostfixIncExpr(id NodeId, pos *position.Position, expression IExpression, operator string) *PostfixIncExpression {
 	return &PostfixIncExpression{&UnaryOpExpression{Expression: NewExpr(id, PostfixIncExpr, pos), Operator: operator, Expr: expression}}
 }
 
@@ -575,7 +582,7 @@ type LogicalNotExpression struct {
 	*UnaryOpExpression
 }
 
-func NewLogicalNotExpr(id int64, pos *position.Position, expression IExpression) *LogicalNotExpression {
+func NewLogicalNotExpr(id NodeId, pos *position.Position, expression IExpression) *LogicalNotExpression {
 	return &LogicalNotExpression{&UnaryOpExpression{Expression: NewExpr(id, LogicalNotExpr, pos), Operator: "!", Expr: expression}}
 }
 
@@ -589,7 +596,7 @@ type CastExpression struct {
 	*UnaryOpExpression
 }
 
-func NewCastExpr(id int64, pos *position.Position, castType string, expression IExpression) *CastExpression {
+func NewCastExpr(id NodeId, pos *position.Position, castType string, expression IExpression) *CastExpression {
 	return &CastExpression{&UnaryOpExpression{Expression: NewExpr(id, CastExpr, pos), Operator: castType, Expr: expression}}
 }
 
@@ -604,7 +611,7 @@ type IncludeExpression struct {
 	Expr IExpression
 }
 
-func NewIncludeExpr(id int64, pos *position.Position, expression IExpression) *IncludeExpression {
+func NewIncludeExpr(id NodeId, pos *position.Position, expression IExpression) *IncludeExpression {
 	return &IncludeExpression{Expression: NewExpr(id, IncludeExpr, pos), Expr: expression}
 }
 
@@ -618,7 +625,7 @@ type IncludeOnceExpression struct {
 	*IncludeExpression
 }
 
-func NewIncludeOnceExpr(id int64, pos *position.Position, expression IExpression) *IncludeOnceExpression {
+func NewIncludeOnceExpr(id NodeId, pos *position.Position, expression IExpression) *IncludeOnceExpression {
 	return &IncludeOnceExpression{&IncludeExpression{Expression: NewExpr(id, IncludeOnceExpr, pos), Expr: expression}}
 }
 
@@ -632,7 +639,7 @@ type RequireExpression struct {
 	*IncludeExpression
 }
 
-func NewRequireExpr(id int64, pos *position.Position, expression IExpression) *RequireExpression {
+func NewRequireExpr(id NodeId, pos *position.Position, expression IExpression) *RequireExpression {
 	return &RequireExpression{&IncludeExpression{Expression: NewExpr(id, RequireExpr, pos), Expr: expression}}
 }
 
@@ -646,7 +653,7 @@ type RequireOnceExpression struct {
 	*IncludeExpression
 }
 
-func NewRequireOnceExpr(id int64, pos *position.Position, expression IExpression) *RequireOnceExpression {
+func NewRequireOnceExpr(id NodeId, pos *position.Position, expression IExpression) *RequireOnceExpression {
 	return &RequireOnceExpression{&IncludeExpression{Expression: NewExpr(id, RequireOnceExpr, pos), Expr: expression}}
 }
 
@@ -662,7 +669,7 @@ type ObjectCreationExpression struct {
 	Args       []IExpression
 }
 
-func NewObjectCreationExpr(id int64, pos *position.Position, designator string, args []IExpression) *ObjectCreationExpression {
+func NewObjectCreationExpr(id NodeId, pos *position.Position, designator string, args []IExpression) *ObjectCreationExpression {
 	return &ObjectCreationExpression{Expression: NewExpr(id, ObjectCreationExpr, pos), Designator: designator, Args: args}
 }
 
@@ -679,13 +686,13 @@ type MemberAccessExpression struct {
 	IsScoped bool
 }
 
-func NewMemberAccessExpr(id int64, pos *position.Position, object, member IExpression) *MemberAccessExpression {
+func NewMemberAccessExpr(id NodeId, pos *position.Position, object, member IExpression) *MemberAccessExpression {
 	return &MemberAccessExpression{Expression: NewExpr(id, MemberAccessExpr, pos),
 		Object: object, Member: member, IsScoped: false,
 	}
 }
 
-func NewScopedPropertyAccessExpr(id int64, pos *position.Position, object, member IExpression) *MemberAccessExpression {
+func NewScopedPropertyAccessExpr(id NodeId, pos *position.Position, object, member IExpression) *MemberAccessExpression {
 	return &MemberAccessExpression{Expression: NewExpr(id, MemberAccessExpr, pos),
 		Object: object, Member: member, IsScoped: true,
 	}
@@ -704,7 +711,7 @@ type AnonymousFunctionCreationExpression struct {
 	ReturnType []string
 }
 
-func NewAnonymousFunctionCreationExpr(id int64, pos *position.Position, params []FunctionParameter, body *CompoundStatement, returnType []string) *AnonymousFunctionCreationExpression {
+func NewAnonymousFunctionCreationExpr(id NodeId, pos *position.Position, params []FunctionParameter, body *CompoundStatement, returnType []string) *AnonymousFunctionCreationExpression {
 	return &AnonymousFunctionCreationExpression{Statement: NewStmt(id, AnonymousFunctionCreationExpr, pos),
 		Params: params, Body: body, ReturnType: returnType,
 	}

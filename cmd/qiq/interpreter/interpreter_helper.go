@@ -158,7 +158,7 @@ var literalExprTypeRuntimeValue = map[ast.NodeType]string{
 func literalExprTypeToRuntimeValue(expr ast.IExpression) (string, phpError.Error) {
 	typeStr, found := literalExprTypeRuntimeValue[expr.GetKind()]
 	if !found {
-		return "", phpError.NewError("literalExprTypeToRuntimeValue: No mapping for type %s", expr.GetKind())
+		return "", phpError.NewError("literalExprTypeToRuntimeValue: No mapping for type %s", expr.GetKindString())
 	}
 	return typeStr, nil
 }

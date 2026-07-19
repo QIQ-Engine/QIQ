@@ -19,7 +19,7 @@ type Parser struct {
 	lexer      *lexer.Lexer
 	tokens     []*lexer.Token
 	currPos    int
-	id         int64
+	id         ast.NodeId
 	stackDepth int
 }
 
@@ -31,7 +31,7 @@ func (parser *Parser) init() {
 	parser.currPos = 0
 }
 
-func (parser *Parser) nextId() int64 {
+func (parser *Parser) nextId() ast.NodeId {
 	parser.id++
 	return parser.id
 }
@@ -248,7 +248,7 @@ func (parser *Parser) parseStmt() (ast.IStatement, phpError.Error) {
 
 		// literal
 		if !lexer.IsLiteral(parser.at()) {
-			return ast.NewEmptyStmt(), phpError.NewParseError("Expected a literal. Got %s in %s", parser.at().TokenType, parser.at().GetPosString())
+			return ast.NewEmptyStmt(), phpError.NewParseError("Expected a literal. Got %s in %s", parser.at().TokenTypeString(), parser.at().GetPosString())
 		}
 		literal, err := parser.parseLiteral()
 		if err != nil {
@@ -466,7 +466,7 @@ func (parser *Parser) parseStmt() (ast.IStatement, phpError.Error) {
 				return ast.NewEmptyStmt(), err
 			}
 			if variable.GetKind() != ast.SimpleVariableExpr {
-				return ast.NewEmptyStmt(), phpError.NewParseError("Global declaration expected a simple variable but got %s in %s", variable.GetKind(), variable.GetPosString())
+				return ast.NewEmptyStmt(), phpError.NewParseError("Global declaration expected a simple variable but got %s in %s", variable.GetKindString(), variable.GetPosString())
 			}
 
 			variables = append(variables, variable)
@@ -1252,7 +1252,7 @@ func (parser *Parser) parseTryStmt() (ast.IStatement, phpError.Error) {
 		return ast.NewEmptyStmt(), err
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", body.GetKind(), body.GetPosString())
+		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", body.GetKindString(), body.GetPosString())
 	}
 
 	tryStmt := ast.NewTryStmt(parser.nextId(), pos, body.(*ast.CompoundStatement))
@@ -1295,7 +1295,7 @@ func (parser *Parser) parseTryStmt() (ast.IStatement, phpError.Error) {
 			return ast.NewEmptyStmt(), err
 		}
 		if body.GetKind() != ast.CompoundStmt {
-			return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", body.GetKind(), body.GetPosString())
+			return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", body.GetKindString(), body.GetPosString())
 		}
 
 		tryStmt.AddCatch(ast.CatchStatement{ErrorType: catchNames, VariableName: variableName, Body: body.(*ast.CompoundStatement)})
@@ -1311,7 +1311,7 @@ func (parser *Parser) parseTryStmt() (ast.IStatement, phpError.Error) {
 			return ast.NewEmptyStmt(), err
 		}
 		if finally.GetKind() != ast.CompoundStmt {
-			return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", finally.GetKind(), finally.GetPosString())
+			return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s in %s", finally.GetKindString(), finally.GetPosString())
 		}
 		tryStmt.Finally = finally.(*ast.CompoundStatement)
 	}
@@ -1387,7 +1387,7 @@ func (parser *Parser) parseFunctionDefinition() (ast.IStatement, phpError.Error)
 	// TODO byRef: function-definition - &(opt)
 
 	if parser.at().TokenType != lexer.NameToken {
-		return ast.NewEmptyStmt(), phpError.NewParseError("Function name expected. Got %s", parser.at().TokenType)
+		return ast.NewEmptyStmt(), phpError.NewParseError("Function name expected. Got %s", parser.at().TokenTypeString())
 	}
 
 	functionName := parser.at().Value
@@ -1428,7 +1428,7 @@ func (parser *Parser) parseFunctionDefinition() (ast.IStatement, phpError.Error)
 		return ast.NewEmptyStmt(), err
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s", body.GetKind())
+		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s", body.GetKindString())
 	}
 
 	return ast.NewFunctionDefinitionStmt(parser.nextId(), pos, functionName, parameters, body.(*ast.CompoundStatement), returnTypes), nil
@@ -1456,7 +1456,7 @@ func (parser *Parser) parseFunctionParameters() ([]ast.FunctionParameter, phpErr
 			byRef := parser.isToken(lexer.OpOrPuncToken, "&", true)
 
 			if parser.at().TokenType != lexer.VariableNameToken {
-				return parameters, phpError.NewParseError(`Expected variable. Got "%s" (%s) in %s`, parser.at().Value, parser.at().TokenType, parser.at().GetPosString())
+				return parameters, phpError.NewParseError(`Expected variable. Got "%s" (%s) in %s`, parser.at().Value, parser.at().TokenTypeString(), parser.at().GetPosString())
 			}
 
 			paramName := parser.eat().Value
@@ -1550,7 +1550,7 @@ func (parser *Parser) parseAnonymousFunctionCreationExpression() (ast.IExpressio
 		return ast.NewEmptyStmt(), err
 	}
 	if body.GetKind() != ast.CompoundStmt {
-		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s", body.GetKind())
+		return ast.NewEmptyStmt(), phpError.NewParseError("Expected compound statement. Got %s", body.GetKindString())
 	}
 
 	return ast.NewAnonymousFunctionCreationExpr(parser.nextId(), pos, parameters, body.(*ast.CompoundStatement), returnTypes), nil
@@ -2752,7 +2752,7 @@ func (parser *Parser) parsePrimaryExpr() (ast.IExpression, phpError.Error) {
 		return ast.NewScopedPropertyAccessExpr(parser.nextId(), pos, variable, member), nil
 	}
 
-	return ast.NewEmptyExpr(), phpError.NewParseError("Unsupported expression type '%s', value: '%s' in %s", parser.at().TokenType, parser.at().Value, parser.at().GetPosString())
+	return ast.NewEmptyExpr(), phpError.NewParseError("Unsupported expression type '%s', value: '%s' in %s", parser.at().TokenTypeString(), parser.at().Value, parser.at().GetPosString())
 }
 
 func (parser *Parser) parseLiteral() (ast.IExpression, phpError.Error) {
