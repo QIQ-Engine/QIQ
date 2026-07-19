@@ -3,6 +3,7 @@ package astGenerator
 import (
 	"QIQ/cmd/qiq/ast"
 	"fmt"
+	"strings"
 )
 
 func (generator *AstGenerator) println(format string, a ...any) { generator.print(format+"\n", a...) }
@@ -12,41 +13,43 @@ func (generator *AstGenerator) print(format string, a ...any) {
 }
 
 func toGoVarName(name string) string {
-	result := ""
+	var result strings.Builder
 	for _, r := range name {
 		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') {
-			result += string(r)
+			result.WriteString(string(r))
 		}
 	}
-	return result
+	return result.String()
 }
 
 func toStringSlice(s []string) string {
-	result := "[]string{"
+	var result strings.Builder
+	result.WriteString("[]string{")
 	for index, str := range s {
 		if index > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += `"` + str + `"`
+		result.WriteString(`"` + str + `"`)
 	}
-	result += "}"
-	return result
+	result.WriteString("}")
+	return result.String()
 }
 
 func funcParamArrayToStr(params []ast.FunctionParameter) string {
-	result := "[]ast.FunctionParameter{"
+	var result strings.Builder
+	result.WriteString("[]ast.FunctionParameter{")
 	for index, param := range params {
 		if index > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += fmt.Sprintf(`{Name: "%s", Type: %s`, param.Name, toStringSlice(param.Type))
+		result.WriteString(fmt.Sprintf(`{Name: "%s", Type: %s`, param.Name, toStringSlice(param.Type)))
 		if param.DefaultValue != nil {
-			result += ", DefaultValue: " + basicTypesToStr(param.DefaultValue)
+			result.WriteString(", DefaultValue: " + basicTypesToStr(param.DefaultValue))
 		}
-		result += "}"
+		result.WriteString("}")
 	}
-	result += "}"
-	return result
+	result.WriteString("}")
+	return result.String()
 }
 
 func toBoolStr(b bool) string {

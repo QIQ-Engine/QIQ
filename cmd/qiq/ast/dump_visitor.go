@@ -7,6 +7,7 @@ import (
 	"maps"
 	"reflect"
 	"slices"
+	"strings"
 )
 
 func ToString(stmt IStatement) string { return NewDumpVisitor(false).toString(stmt) }
@@ -36,7 +37,7 @@ func (visitor DumpVisitor) toString(stmt IStatement) string {
 	}
 	// Check if the underlying value is nil
 	val := reflect.ValueOf(stmt)
-	if val.Kind() == reflect.Ptr && val.IsNil() {
+	if val.Kind() == reflect.Pointer && val.IsNil() {
 		return `"nil"`
 	}
 
@@ -386,14 +387,15 @@ func (visitor DumpVisitor) ProcessGlobalDeclarationStmt(stmt *GlobalDeclarationS
 
 // ProcessIfStmt implements Visitor.
 func (visitor DumpVisitor) ProcessIfStmt(stmt *IfStatement, _ any) (any, error) {
-	elseIf := "{"
+	var elseIf strings.Builder
+	elseIf.WriteString("{")
 	for _, elseIfStmt := range stmt.ElseIf {
-		elseIf += visitor.toString(elseIfStmt) + ", "
+		elseIf.WriteString(visitor.toString(elseIfStmt) + ", ")
 	}
-	elseIf += "}"
+	elseIf.WriteString("}")
 	return fmt.Sprintf(
 		`{ %s, "condition": %s, "ifBlock": %s, "elseIf": %s, "else": %s}`,
-		visitor.getKindAndPos(stmt), visitor.toString(stmt.Condition), visitor.toString(stmt.IfBlock), elseIf, visitor.toString(stmt.ElseBlock),
+		visitor.getKindAndPos(stmt), visitor.toString(stmt.Condition), visitor.toString(stmt.IfBlock), elseIf.String(), visitor.toString(stmt.ElseBlock),
 	), nil
 }
 

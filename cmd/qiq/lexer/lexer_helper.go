@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"QIQ/cmd/qiq/position"
+	"strings"
 )
 
 func (lexer *Lexer) isEof() bool { return lexer.currPos.CurrPos > len(lexer.input)-1 }
@@ -15,10 +16,7 @@ func (lexer *Lexer) at() string {
 }
 
 func (lexer *Lexer) next(offset int) string {
-	pos := lexer.currPos.CurrPos + offset + 1
-	if pos > len(lexer.input) {
-		pos = len(lexer.input)
-	}
+	pos := min(lexer.currPos.CurrPos+offset+1, len(lexer.input))
 	if pos+1 > len(lexer.input) {
 		return ""
 	}
@@ -26,10 +24,7 @@ func (lexer *Lexer) next(offset int) string {
 }
 
 func (lexer *Lexer) nextN(length int) string {
-	end := lexer.currPos.CurrPos + length
-	if end > len(lexer.input) {
-		end = len(lexer.input)
-	}
+	end := min(lexer.currPos.CurrPos+length, len(lexer.input))
 
 	return lexer.input[lexer.currPos.CurrPos:end]
 }
@@ -59,11 +54,11 @@ func (lexer *Lexer) eat() string {
 }
 
 func (lexer *Lexer) eatN(length int) string {
-	result := ""
-	for i := 0; i < length; i++ {
-		result += lexer.eat()
+	var result strings.Builder
+	for range length {
+		result.WriteString(lexer.eat())
 	}
-	return result
+	return result.String()
 }
 
 func (lexer *Lexer) pushToken(tokenType TokenType, value string) {

@@ -1,21 +1,24 @@
 package values
 
+import "strings"
+
 import "fmt"
 
 func ToString(value RuntimeValue) string {
 	switch value.GetType() {
 	case ArrayValue:
-		result := "{ArrayValue: \n"
+		var result strings.Builder
+		result.WriteString("{ArrayValue: \n")
 		arrayValue := value.(*Array)
 		for _, key := range arrayValue.Keys {
-			result += "Key: "
-			result += ToString(key)
-			result += "Value: "
+			result.WriteString("Key: ")
+			result.WriteString(ToString(key))
+			result.WriteString("Value: ")
 			value, _ := arrayValue.GetElement(key)
-			result += ToString(value.Value)
+			result.WriteString(ToString(value.Value))
 		}
-		result += "}\n"
-		return result
+		result.WriteString("}\n")
+		return result.String()
 	case BoolValue:
 		valueStr := "true"
 		if value.(*Bool).Value {

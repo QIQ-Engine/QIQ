@@ -69,7 +69,7 @@ func (parser *Parser) eat() *lexer.Token {
 
 func (parser *Parser) eatN(length int) *lexer.Token {
 	var result *lexer.Token
-	for i := 0; i < length; i++ {
+	for range length {
 		result = parser.eat()
 	}
 	return result
@@ -189,7 +189,7 @@ func (parser *Parser) getTypesWithOffset(eat bool, offset int) ([]string, int, p
 
 func (parser *Parser) getQualifiedName(eat bool) (string, phpError.Error) {
 	offset := 0
-	name := ""
+	var name strings.Builder
 
 	token := func() *lexer.Token {
 		return parser.next(offset - 1)
@@ -199,14 +199,14 @@ func (parser *Parser) getQualifiedName(eat bool) (string, phpError.Error) {
 	for {
 		if token().TokenType == lexer.OpOrPuncToken {
 			if token().Value == `\` {
-				name += token().Value
+				name.WriteString(token().Value)
 				offset++
 				nextMustBeSeparator = false
 			}
 		}
 
 		if !nextMustBeSeparator && (token().TokenType == lexer.NameToken || token().TokenType == lexer.KeywordToken) {
-			name += token().Value
+			name.WriteString(token().Value)
 			offset++
 			nextMustBeSeparator = true
 			continue
@@ -219,5 +219,5 @@ func (parser *Parser) getQualifiedName(eat bool) (string, phpError.Error) {
 		parser.eatN(offset)
 	}
 
-	return name, nil
+	return name.String(), nil
 }

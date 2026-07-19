@@ -42,7 +42,7 @@ func parseQuery(query string) ([][]string, error) {
 		// Get parameters without key e.g. ab+cd+ef
 		if !strings.Contains(key, "=") && strings.Contains(key, "+") {
 			parts := strings.Split(key, "+")
-			for i := 0; i < len(parts); i++ {
+			for i := range parts {
 				result = append(result, []string{parts[i]})
 			}
 			continue

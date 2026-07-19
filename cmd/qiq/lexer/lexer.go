@@ -520,24 +520,24 @@ func (lexer *Lexer) getFloatingPointLiteral(eat bool) string {
 	//    digit
 	//    digit-sequence   digit
 
-	floatStr := ""
+	var floatStr strings.Builder
 	lexer.pushSnapShot()
 	state := "beforeDot"
 
 	for !lexer.isEof() {
 		if state == "beforeDot" {
 			if common.IsDigit(lexer.at()) || lexer.at() == "_" {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				continue
 			}
 			if lexer.at() == "." {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 
 				state = "afterDot"
 				continue
 			}
 			if strings.ToLower(lexer.at()) == "e" {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				state = "exponent"
 				continue
 			}
@@ -546,11 +546,11 @@ func (lexer *Lexer) getFloatingPointLiteral(eat bool) string {
 		}
 		if state == "afterDot" {
 			if common.IsDigit(lexer.at()) || lexer.at() == "_" {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				continue
 			}
 			if strings.ToLower(lexer.at()) == "e" {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				state = "exponent"
 				continue
 			}
@@ -559,7 +559,7 @@ func (lexer *Lexer) getFloatingPointLiteral(eat bool) string {
 		}
 		if state == "exponent" {
 			if lexer.at() == "+" || lexer.at() == "-" || common.IsDigit(lexer.at()) {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				state = "exponentDigit"
 				continue
 			}
@@ -568,7 +568,7 @@ func (lexer *Lexer) getFloatingPointLiteral(eat bool) string {
 		}
 		if state == "exponentDigit" {
 			if common.IsDigit(lexer.at()) || lexer.at() == "_" {
-				floatStr += lexer.eat()
+				floatStr.WriteString(lexer.eat())
 				continue
 			}
 			break
@@ -577,8 +577,8 @@ func (lexer *Lexer) getFloatingPointLiteral(eat bool) string {
 
 	lexer.popSnapShot(!eat)
 
-	if common.IsFloatingLiteral(floatStr, false) {
-		return floatStr
+	if common.IsFloatingLiteral(floatStr.String(), false) {
+		return floatStr.String()
 	}
 
 	lexer.popSnapShot(true)

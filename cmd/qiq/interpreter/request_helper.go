@@ -155,8 +155,8 @@ func parsePost(query string, interpreter runtime.Interpreter) (*values.Array, *v
 						}
 						filename = recode(filename, interpreter.GetIni())
 						lineNum++
-						if strings.HasPrefix(lines[lineNum], "Content-Type:") {
-							contentType = strings.TrimPrefix(lines[lineNum], "Content-Type:")
+						if after, ok := strings.CutPrefix(lines[lineNum], "Content-Type:"); ok {
+							contentType = after
 							contentType = strings.TrimSpace(contentType)
 						}
 					}
@@ -251,7 +251,7 @@ func parseQuery(query string, interpreter runtime.Interpreter) (*values.Array, e
 		// ab+cd+ef => array(1) { ["ab_cd_ef"]=> string(0) "" }
 		if !strings.Contains(key, "=") && strings.Contains(key, "+") {
 			parts := strings.Split(key, "+")
-			for i := 0; i < len(parts); i++ {
+			for i := range parts {
 				if len(parts[i]) > getPostMaxSize(interpreter.GetIni()) {
 					interpreter.PrintError(phpError.NewWarning(
 						"PHP Request Startup: POST Content-Length of %d bytes exceeds the limit of %d bytes in Unknown on line 0",
@@ -341,28 +341,29 @@ func parseQueryKey(key string, value string, result *values.Array, curIni *ini.I
 		}
 	}
 
-	php := "<?php $array"
+	var php strings.Builder
+	php.WriteString("<?php $array")
 	for depth, phpArrayKey := range phpArrayKeys {
 		if depth+1 >= int(maxDepth) {
 			return result, nil
 		}
 		if phpArrayKey == "" {
-			php += "[]"
+			php.WriteString("[]")
 		} else if common.IsIntegerLiteral(phpArrayKey, false) {
 			phpArrayKeyInt, _ := common.IntegerLiteralToInt64(phpArrayKey, false)
-			php += fmt.Sprintf("[%d]", phpArrayKeyInt)
+			php.WriteString(fmt.Sprintf("[%d]", phpArrayKeyInt))
 		} else {
-			php += "['" + phpArrayKey + "']"
+			php.WriteString("['" + phpArrayKey + "']")
 		}
 	}
-	php += " = '" + value + "';"
+	php.WriteString(" = '" + value + "';")
 
 	interpreter, err := NewInterpreter(runtime.NewExecutionContext(), ini.NewDefaultIni(), &request.Request{}, "")
 	if err != nil {
 		return nil, err
 	}
 	interpreter.env.declareVariable("$array", result)
-	_, err = interpreter.Process(php)
+	_, err = interpreter.Process(php.String())
 
 	return interpreter.env.variables["$array"].Value.(*values.Array), err
 }

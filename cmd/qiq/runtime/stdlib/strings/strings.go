@@ -497,10 +497,7 @@ func nativeFn_substr(args []values.RuntimeValue, _ runtime.Context) (values.Runt
 
 	// Handle negative offset
 	if offset < 0 {
-		offset = strLen + offset
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(strLen+offset, 0)
 	}
 	if offset > strLen {
 		return values.NewStr(""), nil
@@ -521,10 +518,7 @@ func nativeFn_substr(args []values.RuntimeValue, _ runtime.Context) (values.Runt
 	}
 
 	// Clamp length to available string
-	end := offset + length
-	if end > strLen {
-		end = strLen
-	}
+	end := min(offset+length, strLen)
 	if end < offset {
 		return values.NewStr(""), nil
 	}

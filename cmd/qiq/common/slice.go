@@ -1,25 +1,27 @@
 package common
 
+import "strings"
+
 func ImplodeSlice(slice []string, separator string) string {
-	result := ""
+	var result strings.Builder
 	for i, s := range slice {
 		if i > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += s
+		result.WriteString(s)
 	}
-	return result
+	return result.String()
 }
 
 func ImplodeStrSlice(slice []string) string {
-	result := ""
+	var result strings.Builder
 	for i, s := range slice {
 		if i > 0 {
-			result += ", "
+			result.WriteString(", ")
 		}
-		result += `"` + s + `"`
+		result.WriteString(`"` + s + `"`)
 	}
-	return result
+	return result.String()
 }
 
 func RemoveIndex[T any](s []T, index int) []T {

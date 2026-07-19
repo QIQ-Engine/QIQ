@@ -3,6 +3,7 @@ package ini
 import (
 	"QIQ/cmd/qiq/common"
 	"QIQ/cmd/qiq/phpError"
+	"maps"
 	"slices"
 	"strings"
 )
@@ -136,8 +137,6 @@ func GetDirectives() []string {
 
 func copyDefaultValues() map[string]string {
 	copyMap := make(map[string]string, len(defaultValues))
-	for k, v := range defaultValues {
-		copyMap[k] = v
-	}
+	maps.Copy(copyMap, defaultValues)
 	return copyMap
 }

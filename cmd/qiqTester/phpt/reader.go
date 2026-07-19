@@ -76,11 +76,11 @@ func (reader *Reader) GetTestFile() (*TestFile, error) {
 
 		if reader.at() == "--POST--" || reader.at() == "--POST_RAW--" {
 			section := reader.eat()
-			postData := ""
+			var postData strings.Builder
 			for !reader.isEof() && !reader.isSection(reader.at()) {
-				postData += reader.eat() + "\n"
+				postData.WriteString(reader.eat() + "\n")
 			}
-			reader.testFile.Post = postData
+			reader.testFile.Post = postData.String()
 			reader.sections = append(reader.sections, section)
 			continue
 		}
@@ -114,7 +114,7 @@ func (reader *Reader) GetTestFile() (*TestFile, error) {
 			argsStr := reader.eat()
 			parts := strings.Split(argsStr, " ")
 			args := [][]string{{reader.filename}}
-			for i := 0; i < len(parts); i++ {
+			for i := range parts {
 				args = append(args, []string{parts[i]})
 			}
 			// TODO parse --arg value --arg=value -avalue -a=value -a value
@@ -138,11 +138,12 @@ func (reader *Reader) GetTestFile() (*TestFile, error) {
 
 		if reader.at() == "--FILE--" {
 			reader.eat()
-			file := reader.testFile.File
+			var file strings.Builder
+			file.WriteString(reader.testFile.File)
 			for !reader.isEof() && !reader.isSection(reader.at()) {
-				file += reader.eat() + "\n"
+				file.WriteString(reader.eat() + "\n")
 			}
-			reader.testFile.File = file
+			reader.testFile.File = file.String()
 			reader.sections = append(reader.sections, "--FILE--")
 			continue
 		}
@@ -167,11 +168,12 @@ func (reader *Reader) GetTestFile() (*TestFile, error) {
 
 		if reader.at() == "--CLEAN--" {
 			reader.eat()
-			file := reader.testFile.File
+			var file strings.Builder
+			file.WriteString(reader.testFile.File)
 			for !reader.isEof() && !reader.isSection(reader.at()) {
-				file += reader.eat() + "\n"
+				file.WriteString(reader.eat() + "\n")
 			}
-			reader.testFile.File = file
+			reader.testFile.File = file.String()
 			continue
 		}
 

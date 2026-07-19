@@ -1,5 +1,7 @@
 package position
 
+import "strings"
+
 import "fmt"
 
 // MARK: Namespace
@@ -11,13 +13,13 @@ type Namespace struct {
 func NewNamespace(namespace []string) *Namespace { return &Namespace{namespace: namespace} }
 
 func (namespace *Namespace) ToString() string {
-	result := ""
+	var result strings.Builder
 	if len(namespace.namespace) > 0 {
 		for _, name := range namespace.namespace {
-			result += name + `\`
+			result.WriteString(name + `\`)
 		}
 	}
-	return result
+	return result.String()
 }
 
 // MARK: File
