@@ -124,19 +124,19 @@ func (interpreter *Interpreter) ProcessSimpleAssignmentExpr(expr *ast.SimpleAssi
 		}
 
 		var valueSlot *values.Slot
-		for i := len(keys) - 1; i >= 0; i-- {
+		for i, key := range slices.Backward(keys) {
 			if currentValue.GetType() != values.ArrayValue {
 				return values.NewVoidSlot(), phpError.NewError("processSimpleAssignmentExpr - Array: Unexpected currentValue type %s", currentValue.GetType())
 			}
 
 			array := currentValue.Value.(*values.Array)
 			var keyValueSlot *values.Slot = values.NewSlot(nil)
-			if keys[i] != nil {
-				keyValueSlot = must(interpreter.processStmt(keys[i], env))
+			if key != nil {
+				keyValueSlot = must(interpreter.processStmt(key, env))
 			}
 
 			if keyValueSlot.Value != nil && keyValueSlot.GetType() == values.NullValue {
-				interpreter.PrintError(phpError.NewDeprecatedError("Using null as an array offset is deprecated, use an empty string instead in %s", keys[i].GetPosString()))
+				interpreter.PrintError(phpError.NewDeprecatedError("Using null as an array offset is deprecated, use an empty string instead in %s", key.GetPosString()))
 			}
 
 			if i == 0 {
@@ -239,19 +239,19 @@ func (interpreter *Interpreter) ProcessSubscriptExpr(expr *ast.SubscriptExpressi
 			subarray = subarray.(*ast.SubscriptExpression).Variable
 		}
 
-		for i := len(keys) - 1; i >= 0; i-- {
+		for i, key := range slices.Backward(keys) {
 			// TODO processSubscriptExpr - no key
 			// Spec: https://phplang.org/spec/10-expressions.html#grammar-subscript-expression
 			// If expression is omitted, a new element is inserted. Its key has type int and is one more than the highest, previously assigned int key for this array. If this is the first element with an int key, key 0 is used. If the largest previously assigned int key is the largest integer value that can be represented, the new element is not added. The result is the added new element, or NULL if the element was not added.
 
 			var keyValueSlot *values.Slot = values.NewSlot(nil)
-			if keys[i] != nil {
-				keyValueSlot = must(interpreter.processStmt(keys[i], env))
+			if key != nil {
+				keyValueSlot = must(interpreter.processStmt(key, env))
 			}
 			exists := array.Contains(keyValueSlot.Value)
 
 			if keyValueSlot.Value != nil && keyValueSlot.GetType() == values.NullValue {
-				interpreter.PrintError(phpError.NewDeprecatedError("Using null as an array offset is deprecated, use an empty string instead in %s", keys[i].GetPosString()))
+				interpreter.PrintError(phpError.NewDeprecatedError("Using null as an array offset is deprecated, use an empty string instead in %s", key.GetPosString()))
 			}
 
 			if i == 0 {
@@ -385,8 +385,8 @@ func (interpreter *Interpreter) ProcessFunctionCallExpr(expr *ast.FunctionCallEx
 	functionEnv.CurrentFunction = userFunction
 
 	requiredParams := len(userFunction.Params)
-	for i := len(userFunction.Params) - 1; i >= 0; i-- {
-		if userFunction.Params[i].DefaultValue != nil {
+	for _, param := range slices.Backward(userFunction.Params) {
+		if param.DefaultValue != nil {
 			requiredParams--
 		} else {
 			break

@@ -5,6 +5,7 @@ import (
 	"QIQ/cmd/qiq/config"
 	"QIQ/cmd/qiq/phpError"
 	"fmt"
+	"slices"
 	"strconv"
 )
 
@@ -186,12 +187,12 @@ func (array *Array) getNextKey(key RuntimeValue) (RuntimeValue, phpError.Error) 
 		var lastFoundInt int64 = -1
 		found := false
 		// Iterate all keys and search for integer values
-		for i := len(array.Keys) - 1; i >= 0; i-- {
-			if array.Keys[i].GetType() != IntValue {
+		for _, key := range slices.Backward(array.Keys) {
+			if key.GetType() != IntValue {
 				continue
 			}
 
-			foundInt := array.Keys[i].(*Int).Value
+			foundInt := key.(*Int).Value
 			if !found {
 				lastFoundInt = foundInt
 				found = true
