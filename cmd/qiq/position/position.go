@@ -1,8 +1,9 @@
 package position
 
-import "strings"
-
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // MARK: Namespace
 
@@ -16,7 +17,8 @@ func (namespace *Namespace) ToString() string {
 	var result strings.Builder
 	if len(namespace.namespace) > 0 {
 		for _, name := range namespace.namespace {
-			result.WriteString(name + `\`)
+			result.WriteString(name)
+			result.WriteString(`\`)
 		}
 	}
 	return result.String()

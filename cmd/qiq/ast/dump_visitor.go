@@ -390,7 +390,8 @@ func (visitor DumpVisitor) ProcessIfStmt(stmt *IfStatement, _ any) (any, error) 
 	var elseIf strings.Builder
 	elseIf.WriteString("{")
 	for _, elseIfStmt := range stmt.ElseIf {
-		elseIf.WriteString(visitor.toString(elseIfStmt) + ", ")
+		elseIf.WriteString(visitor.toString(elseIfStmt))
+		elseIf.WriteString(", ")
 	}
 	elseIf.WriteString("}")
 	return fmt.Sprintf(
