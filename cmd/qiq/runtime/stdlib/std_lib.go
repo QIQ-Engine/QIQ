@@ -4,6 +4,7 @@ import (
 	"QIQ/cmd/qiq/runtime"
 	"QIQ/cmd/qiq/runtime/stdlib/array"
 	"QIQ/cmd/qiq/runtime/stdlib/classes"
+	"QIQ/cmd/qiq/runtime/stdlib/ctype"
 	"QIQ/cmd/qiq/runtime/stdlib/dateTime"
 	"QIQ/cmd/qiq/runtime/stdlib/directory"
 	"QIQ/cmd/qiq/runtime/stdlib/errorHandling"
@@ -20,6 +21,7 @@ import (
 func Register(environment runtime.Environment) {
 	array.Register(environment)
 	classes.Register(environment)
+	ctype.Register(environment)
 	dateTime.Register(environment)
 	directory.Register(environment)
 	errorHandling.Register(environment)

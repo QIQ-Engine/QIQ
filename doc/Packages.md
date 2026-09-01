@@ -59,22 +59,26 @@ flowchart LR
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_ast[QIQ/cmd/qiq/ast]
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_ini[QIQ/cmd/qiq/ini]
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
+    QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_position[QIQ/cmd/qiq/position]
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_request[QIQ/cmd/qiq/request]
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_runtime_outputBuffer[QIQ/cmd/qiq/runtime/outputBuffer]
     QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime] --> QIQ_cmd_qiq_runtime_values[QIQ/cmd/qiq/runtime/values]
 
     QIQ_cmd_qiq_runtime_classes[QIQ/cmd/qiq/runtime/classes] --> QIQ_cmd_qiq_ast[QIQ/cmd/qiq/ast]
+    QIQ_cmd_qiq_runtime_classes[QIQ/cmd/qiq/runtime/classes] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
     QIQ_cmd_qiq_runtime_classes[QIQ/cmd/qiq/runtime/classes] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
 
     QIQ_cmd_qiq_runtime_funcParamValidator[QIQ/cmd/qiq/runtime/funcParamValidator] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
     QIQ_cmd_qiq_runtime_funcParamValidator[QIQ/cmd/qiq/runtime/funcParamValidator] --> QIQ_cmd_qiq_runtime_values[QIQ/cmd/qiq/runtime/values]
 
     QIQ_cmd_qiq_runtime_interfaces[QIQ/cmd/qiq/runtime/interfaces] --> QIQ_cmd_qiq_ast[QIQ/cmd/qiq/ast]
+    QIQ_cmd_qiq_runtime_interfaces[QIQ/cmd/qiq/runtime/interfaces] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
     QIQ_cmd_qiq_runtime_interfaces[QIQ/cmd/qiq/runtime/interfaces] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
 
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_array[QIQ/cmd/qiq/runtime/stdlib/array]
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_classes[QIQ/cmd/qiq/runtime/stdlib/classes]
+    QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_ctype[QIQ/cmd/qiq/runtime/stdlib/ctype]
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_dateTime[QIQ/cmd/qiq/runtime/stdlib/dateTime]
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_directory[QIQ/cmd/qiq/runtime/stdlib/directory]
     QIQ_cmd_qiq_runtime_stdlib[QIQ/cmd/qiq/runtime/stdlib] --> QIQ_cmd_qiq_runtime_stdlib_errorHandling[QIQ/cmd/qiq/runtime/stdlib/errorHandling]
@@ -99,6 +103,11 @@ flowchart LR
     QIQ_cmd_qiq_runtime_stdlib_classes[QIQ/cmd/qiq/runtime/stdlib/classes] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
     QIQ_cmd_qiq_runtime_stdlib_classes[QIQ/cmd/qiq/runtime/stdlib/classes] --> QIQ_cmd_qiq_runtime_funcParamValidator[QIQ/cmd/qiq/runtime/funcParamValidator]
     QIQ_cmd_qiq_runtime_stdlib_classes[QIQ/cmd/qiq/runtime/stdlib/classes] --> QIQ_cmd_qiq_runtime_values[QIQ/cmd/qiq/runtime/values]
+
+    QIQ_cmd_qiq_runtime_stdlib_ctype[QIQ/cmd/qiq/runtime/stdlib/ctype] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
+    QIQ_cmd_qiq_runtime_stdlib_ctype[QIQ/cmd/qiq/runtime/stdlib/ctype] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
+    QIQ_cmd_qiq_runtime_stdlib_ctype[QIQ/cmd/qiq/runtime/stdlib/ctype] --> QIQ_cmd_qiq_runtime_funcParamValidator[QIQ/cmd/qiq/runtime/funcParamValidator]
+    QIQ_cmd_qiq_runtime_stdlib_ctype[QIQ/cmd/qiq/runtime/stdlib/ctype] --> QIQ_cmd_qiq_runtime_values[QIQ/cmd/qiq/runtime/values]
 
     QIQ_cmd_qiq_runtime_stdlib_dateTime[QIQ/cmd/qiq/runtime/stdlib/dateTime] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
     QIQ_cmd_qiq_runtime_stdlib_dateTime[QIQ/cmd/qiq/runtime/stdlib/dateTime] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]
@@ -159,6 +168,7 @@ flowchart LR
     QIQ_cmd_qiq_runtime_stdlib_strings[QIQ/cmd/qiq/runtime/stdlib/strings] --> QIQ_cmd_qiq_runtime_stdlib_variableHandling[QIQ/cmd/qiq/runtime/stdlib/variableHandling]
     QIQ_cmd_qiq_runtime_stdlib_strings[QIQ/cmd/qiq/runtime/stdlib/strings] --> QIQ_cmd_qiq_runtime_values[QIQ/cmd/qiq/runtime/values]
 
+    QIQ_cmd_qiq_runtime_stdlib_variableHandling[QIQ/cmd/qiq/runtime/stdlib/variableHandling] --> QIQ_cmd_qiq_ast[QIQ/cmd/qiq/ast]
     QIQ_cmd_qiq_runtime_stdlib_variableHandling[QIQ/cmd/qiq/runtime/stdlib/variableHandling] --> QIQ_cmd_qiq_common[QIQ/cmd/qiq/common]
     QIQ_cmd_qiq_runtime_stdlib_variableHandling[QIQ/cmd/qiq/runtime/stdlib/variableHandling] --> QIQ_cmd_qiq_phpError[QIQ/cmd/qiq/phpError]
     QIQ_cmd_qiq_runtime_stdlib_variableHandling[QIQ/cmd/qiq/runtime/stdlib/variableHandling] --> QIQ_cmd_qiq_runtime[QIQ/cmd/qiq/runtime]

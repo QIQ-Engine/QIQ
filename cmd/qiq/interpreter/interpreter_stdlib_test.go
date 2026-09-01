@@ -8,6 +8,136 @@ import (
 	"testing"
 )
 
+// -------------------------------------- ctype -------------------------------------- MARK: ctype
+
+func TestLibCType(t *testing.T) {
+	// ctype_alnum
+	testInputOutput(t, `<?php var_dump(ctype_alnum(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum(" "));`, "bool(false)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-alnum.php
+	testInputOutput(t, `<?php var_dump(ctype_alnum("AbCd1zyZ9"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum('foo!#$bar'));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum("áeiou"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum("aeiöu"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum("ñ"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alnum("aeiou"));`, "bool(true)\n")
+
+	// ctype_alpha
+	testInputOutput(t, `<?php var_dump(ctype_alpha(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alpha(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alpha("aeiou"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-alpha.php
+	testInputOutput(t, `<?php var_dump(ctype_alpha("KjgWZC"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_alpha("arf12"));`, "bool(false)\n")
+
+	// ctype_cntrl
+	testInputOutput(t, `<?php var_dump(ctype_cntrl(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_cntrl(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_cntrl("\n"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-cntrl.php
+	testInputOutput(t, `<?php var_dump(ctype_cntrl("arf12"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_cntrl("\n\r\t"));`, "bool(true)\n")
+
+	// ctype_digit
+	testInputOutput(t, `<?php var_dump(ctype_digit(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit("0"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit("1"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit("99"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-digit.php
+	testInputOutput(t, `<?php var_dump(ctype_digit("10002"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit("1820.20"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_digit("wsl!12"));`, "bool(false)\n")
+
+	// ctype_graph
+	testInputOutput(t, `<?php var_dump(ctype_graph(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("ä"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("a"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("#"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("a_-;."));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-graph.php
+	testInputOutput(t, `<?php var_dump(ctype_graph("asdf\n\r\t"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("arf12"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_graph("LKA#@%.54"));`, "bool(true)\n")
+
+	// ctype_lower
+	testInputOutput(t, `<?php var_dump(ctype_lower(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_lower(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_lower("A"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_lower("a"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-lower.php
+	testInputOutput(t, `<?php var_dump(ctype_lower("aac123"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_lower("qiutoas"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_lower("QASsdks"));`, "bool(false)\n")
+
+	// ctype_print
+	testInputOutput(t, `<?php var_dump(ctype_print(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("ä"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("€"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print(" "));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("A"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("a"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("_"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-print.php
+	testInputOutput(t, `<?php var_dump(ctype_print("asdf\n\r\t"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("arf12"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_print("LKA#@%.54"));`, "bool(true)\n")
+
+	// ctype_punct
+	testInputOutput(t, `<?php var_dump(ctype_punct(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct("a"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct("°"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct("²"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct("³"));`, "bool(false)\n")
+	testInputOutput(t, "<?php var_dump(ctype_punct('`'));", "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct('.+*~\'#-_.:,;<>|^!"$%&/{([)]=}?\\'));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-punct.php
+	testInputOutput(t, `<?php var_dump(ctype_punct('ABasdk!@!$#'));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct('!@ # $'));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_punct('*&$()'));`, "bool(true)\n")
+
+	// ctype_space
+	testInputOutput(t, `<?php var_dump(ctype_space(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("a"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("1"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space(" "));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\n"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\t"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\r"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\v"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\f"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-space.php
+	testInputOutput(t, `<?php var_dump(ctype_space("\n\r\t"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space("\narf12"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_space('\n\r\t'));`, "bool(false)\n")
+
+	// ctype_upper
+	testInputOutput(t, `<?php var_dump(ctype_upper(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("a"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("1"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("-"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("A"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("ABC"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-upper.php
+	testInputOutput(t, `<?php var_dump(ctype_upper("AKLWC139"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("LMNSDO"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_upper("akwSKWsm"));`, "bool(false)\n")
+
+	// ctype_xdigit
+	testInputOutput(t, `<?php var_dump(ctype_xdigit(""));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit(" "));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("G"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("ABCDEF"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("1234567890"));`, "bool(true)\n")
+	// Examples from https://www.php.net/manual/en/function.ctype-xdigit.php
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("AB10BC99"));`, "bool(true)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("AR1012"));`, "bool(false)\n")
+	testInputOutput(t, `<?php var_dump(ctype_xdigit("ab12bc99"));`, "bool(true)\n")
+}
+
 // -------------------------------------- math -------------------------------------- MARK: math
 
 func TestLibMath(t *testing.T) {
