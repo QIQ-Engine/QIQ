@@ -224,6 +224,10 @@ func ReplaceDoubleQuoteControlChars(str string) string {
 				return "\n"
 			case `\t`:
 				return "\t"
+			case `\f`:
+				return "\f"
+			case `\v`:
+				return "\v"
 			default:
 				return sub
 			}

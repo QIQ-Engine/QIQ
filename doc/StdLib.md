@@ -14,6 +14,19 @@
 - count
 - key_exists
 
+## Character type checking Functions
+- ctype_alnum
+- ctype_alpha
+- ctype_cntrl
+- ctype_digit
+- ctype_graph
+- ctype_lower
+- ctype_print
+- ctype_punct
+- ctype_space
+- ctype_upper
+- ctype_xdigit
+
 ## Classes/Object Functions
 - class_alias
 - class_exists
