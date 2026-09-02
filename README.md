@@ -1,4 +1,4 @@
-[![Build and Test](https://github.com/MasterZydra/QIQ/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/MasterZydra/QIQ/actions/workflows/build-and-test.yml)
+[![Build and Test](https://github.com/QIQ-Engine/QIQ/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/QIQ-Engine/QIQ/actions/workflows/build-and-test.yml)
 # QIQ <img style="height: 1em;" src="doc/Rabbit.svg">
 
 QIQ (**Q**uick **I**nterpreter for **Q**uasi-PHP, /kik/) is an implementation of the [PHP language specification](https://phplang.org/) written in the Go programming language.
@@ -57,39 +57,39 @@ If you want to test or use QIQ with Docker, we've got you covered!
 
 You can use the latest version: (This is not recommended as it might by unstable):
 ```bash
-docker pull ghcr.io/masterzydra/qiq:latest
+docker pull ghcr.io/qiq-engine/qiq:latest
 ```
 
 Or use a specific version:
 ```bash
-docker pull ghcr.io/masterzydra/qiq:v0.4.0
+docker pull ghcr.io/qiq-engine/qiq:v0.4.0
 ```
 
 You can find all versions [here](https://github.com/MasterZydra/QIQ/pkgs/container/qiq/versions).
 
 ### Run the docker image 
 ```bash
-docker run -p 8080:8080 ghcr.io/masterzydra/qiq:latest
+docker run -p 8080:8080 ghcr.io/qiq-engine/qiq:latest
 ```
 
 You can change the port used inside the container (default: *8080*):
 ```bash
-docker run -p 8081:8081 --env PORT=8081 ghcr.io/masterzydra/qiq:latest
+docker run -p 8081:8081 --env PORT=8081 ghcr.io/qiq-engine/qiq:latest
 ```
 
 You can change the document root (default: */var/www/html*)
 ```bash
-docker run -p 8080:8080 --env DOC_ROOT=/var/www/html/public ghcr.io/masterzydra/qiq:latest
+docker run -p 8080:8080 --env DOC_ROOT=/var/www/html/public ghcr.io/qiq-engine/qiq:latest
 ```
 
 You can run the QIQ server in development mode (default: *false*)
 ```bash
-docker run -p 8080:8080 --env DEV=true ghcr.io/masterzydra/qiq:latest
+docker run -p 8080:8080 --env DEV=true ghcr.io/qiq-engine/qiq:latest
 ```
 
 You can also mount a local project into the container:
 ```bash
-docker run -p 8080:8080 -v $(pwd):/var/www/html:z ghcr.io/masterzydra/qiq:latest
+docker run -p 8080:8080 -v $(pwd):/var/www/html:z ghcr.io/qiq-engine/qiq:latest
 ```
 
 ## Special features
