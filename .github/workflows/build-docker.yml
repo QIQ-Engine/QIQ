@@ -16,7 +16,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: masterzydra/qiq
+  IMAGE_NAME: qiq-engine/qiq
 
 jobs:
   build:
@@ -76,7 +76,7 @@ jobs:
         uses: vlaurin/action-ghcr-prune@v0.6.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          user: masterzydra
+          user: qiq-engine
           container: qiq
           prune-untagged: true
           prune-tags-regexes: ^sha256
