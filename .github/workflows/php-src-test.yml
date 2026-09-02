@@ -73,7 +73,9 @@ jobs:
       run: |
         git add succeeded_history.txt README.md
         git commit -m "Update succeeded history [skip ci]" || echo "No changes to commit"
-        git push origin stats
+        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git stats
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test-windows:
     name: Build & Run official PHP Tests on Windows
